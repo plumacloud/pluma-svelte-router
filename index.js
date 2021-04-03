@@ -18,8 +18,9 @@ export function initRouter (initialConfig) {
 	// Reset the scroll position on route change
 	config.resetScroll = initialConfig.resetScroll || true;
 
-	// Component that will be used if no route is matched
+	// Route that will be used if no route is matched
 	config.errorRoute = {
+		path: '',
 		components: [initialConfig.notFoundComponent]
 	}
 
@@ -114,7 +115,7 @@ export async function push (request) {
 	const route = getRouteFromPath(request.path);
 
 	// Trigger updates on the UI
-	currentPath.set(request.path);
+	currentPath.set(route.path);
 	currentRoute.set(route);
 
 	await tick();
@@ -155,7 +156,7 @@ async function onPopState (event) {
 	const route = getRouteFromPath(historyItem.path);
 
 	// Trigger updates on the UI
-	currentPath.set(historyItem.path);
+	currentPath.set(route.path);
 	currentRoute.set(route);
 
 	await tick();
