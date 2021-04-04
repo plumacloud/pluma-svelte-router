@@ -1,12 +1,15 @@
 # PLUMA Svelte Router
 
-This is a client-side router that uses history mode. It's not even a `0.0.1` release so expect bugs, changes, and dragons.
+This is a client-side router that uses history mode. It's super early in developement so expect bugs, changes, and dragons.
 
-It's not published on NPM yet but will be at in the coming weeks.
+To install:
+```
+npm i pluma-svelte-router
+```
 
 To test it out, clone this repo and do `npm install && npm run dev-test-app`.
 
-## Basic usage:
+## Simple example
 
 ```svelte
 <script>
@@ -28,6 +31,44 @@ To test it out, clone this repo and do `npm install && npm run dev-test-app`.
 </script>
 
 <Router {config}/>
+```
+
+## More complex router config example
+
+This example is taken from the [test-app](../test-app/router.js).
+
+```js
+import Home from './components/Home.svelte';
+import About from './components/About.svelte';
+import Modal from './components/Modal.svelte';
+import Error from './components/Error.svelte';
+import Nested from './components/Nested.svelte';
+import ChildA from './components/ChildA.svelte';
+import ChildB from './components/ChildB.svelte';
+import GrandchildA from './components/GrandchildA.svelte';
+
+export default {
+  notFoundComponent: Error,
+  routes: [
+    { path: '/', component: Home },
+    { path: '/about', component: About },
+    { path: '/about/some-modal', components: [About, Modal], blockPageScroll: true },
+    {
+      path: '/nested',
+      component: Nested,
+      children: [
+        {
+          path: 'child-a',
+          component: ChildA,
+          children: [
+            { path: 'grandchild-a', component: GrandchildA }
+          ]
+        },
+        { path: 'child-b', component: ChildB }
+      ]
+    }
+  ]
+};
 ```
 
 ## Configuring routes
@@ -75,39 +116,35 @@ To tell the router where to render child routes, you need to add a `route-child`
 ```
 
 
-### Nested components in a single route
-It's also possible to compose nested components right from the router by doing:
+### Composing components on the router
+It's possible to compose nested components right from the router by doing:
 
 ```js
 { path: '/some-path', components: [Parent, Child] }
 ````
 
-This will render the `Child` component in the `route-child` slot of the `Parent` component.
+This will render the `Child` component in the `route-child` slot of the `Parent` component:
 
-This is useful, for example, when you want deep linking on modals, or you'd like a modal to close when pressing back. For example:
+```svelte
+// Parent.svelte
+<slot name="route-child"></slot>
+```
+
+This feature is useful to use components as layouts or when integrating modals with the router. For example, when you want deep linking on modals, or you'd like a modal to close when pressing back:
 
 ```js
-// Login modal
-{ path: '/home', components: [Home] },
-{ path: '/home/login', components: [Home, LoginModal], blockPageScroll: true }
-
 // Picture modal
 { path: '/photos', components: [Photos] },
 { path: '/photos/:photoId', components: [Photos, PhotoDetailModal], blockPageScroll: true }
+
+// Login modal
+{ path: '/home', components: [Home] },
+{ path: '/home/login', components: [Home, LoginModal], blockPageScroll: true }
 ````
 
+See the [test-app](../test-app/components/About.svelte) for an example on using modals.
+
 ## The `Link` component
-A simple link with a hash will suffice in many cases to trigger a navigation change:
-```html
-<a href="#/about">About</a>
-```
-This has a couple of limitations though:
-
-1. The link will be missing a CSS class to determine an active route
-2. You can't control the scrolling behavior of the router
-
-To overcome those limitations, you can simply use the `Link` component:
-
 ```svelte
 <script>
   import Link from 'pluma-svelte-router';
@@ -138,9 +175,9 @@ You can implement your custom active behavior by using the `currentPath` store:
 </script>
 
 
-<a class:active={$currentPath === '/about'} href="#/about">About</a>
-<a class:active={$currentPath.startsWith('/nested')} href="#/nested">Section with children</a>
-<a class:active={$currentPath === '/nested/child' || $currentPath.endsWith('child')} href="#/nested/child">Child section</a>
+<a class:active={$currentPath === '/about'} href="/about">About</a>
+<a class:active={$currentPath.startsWith('/nested')} href="/nested">Section with children</a>
+<a class:active={$currentPath === '/nested/child' || $currentPath.endsWith('child')} href="/nested/child">Child section</a>
 ```
 
 ## Programmatic navigation
@@ -148,17 +185,17 @@ You can implement your custom active behavior by using the `currentPath` store:
 ### `push()`
 
 ```js
-// just pass a path
+// You can simply use a path
 push('/about');
 
 push({
-	path: '/about',
-	resetScroll: false
+    path: '/about',
+    resetScroll: false
 });
 
 push({
-	path: '/users/something',
-	scrollToId: 'tab-menu'
+    path: '/users/something',
+    scrollToId: 'tab-menu'
 });
 ```
 
@@ -167,7 +204,6 @@ push({
 ### Router configuration options
 
 * `notFoundComponent` a component reference that will be rendered if there are no matched routes.
-* `renderFirstChild` determines if the first child of a parent route will be rendered by default. The default is `true`.
 * `resetScroll` determines if the scroll should be set to `0,0` when transitioning to a new route. The default is `true`.
 
 ### Route configuration options
@@ -176,6 +212,15 @@ push({
 * `components` the component tree that will be rendered when the path is matched
 * `children` an array of children routes
 * `blockPageScroll` whether to removing the scrolling capability of the `body` element by setting `overflow: hidden;`
+
+### `Link` component props
+
+* `path` the router path that will be triggered.
+* `activeClass` the CSS class that will be applied is the `Link` is deemed to be active. By default the CSS class is `active`.
+* `resetScroll` determines whether the router should scroll to the top left of the page when navigating. The default is `true`.
+* `scrollToId` determines if the router should scroll to an element with a particular `id` after transitioning to the next page. The router will try to center the element in the center of the viewport.
+
+Common HTML attributes will be applied to the `<a>` tag: `class`, `role`, `id`.
 
 ## FAQ
 
@@ -186,12 +231,16 @@ This router does not support this feature to respect users that may have configu
 
 Features that will be implemented in the not-so-distant future:
 
-* History
-* Code splitting
+* Route params
+* Query strings
+* Route data cache
+* Allow click with modifiers
+* Hooks
 
-Features that could be implemented if there's demand:
+Features that will be implemented for the `1.0.0` release:
 
 * TypeScript
+* Code splitting
 
 Features that will not be implemented:
 

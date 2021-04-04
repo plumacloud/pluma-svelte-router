@@ -1,6 +1,6 @@
 <script>
 	import {currentPath, push} from './index.js';
-	export let path, activeClass = 'active', resetScroll = true, scrollToId, role;
+	export let path, activeClass = 'active', resetScroll = true, scrollToId, role, id;
 
 	let classes;
 	export {classes as class};
@@ -29,4 +29,4 @@
 
 </script>
 
-<a {href} class={cssClasses} on:click|preventDefault={onClick} {role}><slot></slot></a>
+<a {href} class={cssClasses} on:click|preventDefault={onClick} {role} {id}><slot></slot></a>
