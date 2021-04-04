@@ -1,11 +1,11 @@
-import Home from './Home.svelte';
-import About from './About.svelte';
-import Modal from './Modal.svelte';
-import Error from './Error.svelte';
-import Nested from './Nested.svelte';
-import ChildA from './ChildA.svelte';
-import ChildB from './ChildB.svelte';
-import GrandchildA from './GrandchildA.svelte';
+import Home from './components/Home.svelte';
+import About from './components/About.svelte';
+import Modal from './components/Modal.svelte';
+import Error from './components/Error.svelte';
+import Nested from './components/Nested.svelte';
+import ChildA from './components/ChildA.svelte';
+import ChildB from './components/ChildB.svelte';
+import GrandchildA from './components/GrandchildA.svelte';
 
 export default {
 	notFoundComponent: Error,

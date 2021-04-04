@@ -1,5 +1,5 @@
 <script>
-	import {back} from '../src/index.js';
+	import {back} from 'pluma-svelte-router';
 
 	function closeModal () {
 		back({

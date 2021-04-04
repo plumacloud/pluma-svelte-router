@@ -1,7 +1,7 @@
 <script>
 	import Menu from './Menu.svelte';
-	import Router from '../src/Router.svelte';
-	import routerConfig from './router-config.js';
+	import {Router} from 'pluma-svelte-router';
+	import routerConfig from '../router.js';
 </script>
 
 <Menu/>

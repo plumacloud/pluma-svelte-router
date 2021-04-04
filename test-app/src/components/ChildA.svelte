@@ -1,5 +1,5 @@
 <script>
-	import Link from '../src/Link.svelte';
+	import {Link} from 'pluma-svelte-router';
 </script>
 
 <h3>Child A</h3>
