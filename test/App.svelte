@@ -4,6 +4,8 @@
 	import routerConfig from './router-config.js';
 </script>
 
-<h1 class="mb-4">My App</h1>
 <Menu/>
-<Router config={routerConfig}/>
+
+<div style="padding-top: 4rem;">
+	<Router config={routerConfig}/>
+</div>

@@ -24,7 +24,11 @@ export function initRouter (initialConfig) {
 		components: [initialConfig.notFoundComponent]
 	}
 
-	push(config.routes[0].path);
+	window.addEventListener('popstate', onPopState);
+	history.scrollRestoration = 'manual';
+
+	// push(config.routes[0].path);
+	push(window.location.pathname);
 }
 
 function flattenRoutes (routesTree) {
@@ -33,7 +37,8 @@ function flattenRoutes (routesTree) {
 	routesTree.forEach((route) => {
 		const flatRoute = {
 			path: route.path,
-			components: route.component ? [route.component] : route.components
+			components: route.component ? [route.component] : route.components,
+			blockScroll: route.blockScroll
 		};
 
 		// All paths should start with /
@@ -68,24 +73,42 @@ function flattenRoutes (routesTree) {
 	return routes;
 }
 
-window.addEventListener('popstate', onPopState);
-
 // UTILS
 
 function getHistoryItemById (id) {
 	return routerHistory.find((item) => item.id === id);
 }
 
-function setScroll ({x, y, mode}) {
+function getLastHistoryItem () {
+	return routerHistory[routerHistory.length - 1];
+}
+
+function setScroll ({x, y}) {
 	window.scrollTo({
 		top: y,
 		left: x
 	});
 }
 
-function scrollToId (id) {
+function getScrollPositionById (id) {
 	const element = document.getElementById(id);
-	if (element) element.scrollIntoView(true);
+
+	if (element) {
+		// Find the best scroll position to center the element on the viewport
+		const rectangle = element.getBoundingClientRect();
+
+		let scrollTop = rectangle.top - window.innerHeight / 2;
+		let scrollLeft = rectangle.left - window.innerWidth / 2;
+
+		const position = {
+			x: scrollLeft < 0 ? 0 : scrollLeft,
+			y: scrollTop < 0 ? 0 : scrollTop
+		};
+
+		return position;
+	} else {
+		throw `Element id "${id}" doesn't exist in the page`;
+	}
 }
 
 function getRouteFromPath (path) {
@@ -102,17 +125,42 @@ function getRouteFromPath (path) {
 	return config.errorRoute;
 }
 
+function blockScroll () {
+	console.log('blocking scroll');
+	document.body.style.overflow = 'hidden';
+}
+
+function unblockScroll () {
+	document.body.style.overflow = 'auto';
+}
+
+function saveScrollPositionToLastHistoryItem () {
+	const lastHistoryItem = getLastHistoryItem();
+
+	if (lastHistoryItem) {
+		lastHistoryItem.scrollPosition = {
+			x: window.scrollX,
+			y: window.scrollY
+		}
+
+		console.log(lastHistoryItem);
+	}
+}
+
 // NAVIGATION
 
-export async function push (request) {
+export async function push (options) {
 
-	if (typeof request === 'string') {
-		request = {
-			path: request
+	if (typeof options === 'string') {
+		options = {
+			path: options
 		}
 	}
 
-	const route = getRouteFromPath(request.path);
+	saveScrollPositionToLastHistoryItem();
+
+	// Find the route from a path
+	const route = getRouteFromPath(options.path);
 
 	// Trigger updates on the UI
 	currentPath.set(route.path);
@@ -120,36 +168,53 @@ export async function push (request) {
 
 	await tick();
 
-	const historyState = {
+	if (route.blockScroll) blockScroll();
+	else unblockScroll();
+
+	// Determine the position to scroll to after the navigation
+	let scrollPosition;
+
+	// If the route doesn't block scroll
+	// And the router is configured to reset scroll on navigation
+	// And the Link is not blocking the scroll to reset...
+	if (route.blockScroll !== true && config.resetScroll && options.resetScroll !== false) {
+		scrollPosition = options.scrollToId ? getScrollPositionById(options.scrollToId) : {x: 0, y: 0};
+		if (scrollPosition) setScroll(scrollPosition);
+	}
+
+	// Create a new history item
+	const historyItem = {
 		id: Date.now(),
-		path: request.path
+		path: route.path,
+		blockScroll: route.blockScroll
 	}
 
-	if (request.scrollToId) {
-		historyState.scrollToId = request.scrollToId;
+	if (options.scrollToId) {
+		historyItem.scrollToId = options.scrollToId;
+	}
+
+	routerHistory.push(historyItem);
+
+	window.history.pushState({id: historyItem.id}, '', options.path);
+}
+
+export function back (options) {
+	if (options.fallbackPath && routerHistory.length === 1) {
+		console.log('fallback!', routerHistory.length);
+		push(options.fallbackPath);
 	} else {
-		historyState.scrollPosition = {
-			x: window.scrollX,
-			y: window.scrollY
-		}
-	}
-
-	routerHistory.push(historyState);
-
-	window.history.pushState(historyState, '', request.path);
-
-	if (config.resetScroll && request.resetScroll !== false) {
-		if (request.scrollToId) {
-			scrollToId(request.scrollToId);
-		} else {
-			setScroll({x: 0, y: 0});
-		}
+		console.log('going back!');
+		saveScrollPositionToLastHistoryItem();
+		window.history.back();
 	}
 }
 
 async function onPopState (event) {
+	// Find the history item by using the id
 	const id = event.state.id;
 	const historyItem = getHistoryItemById(id);
+
+	// console.log(historyItem);
 
 	if (!historyItem) return;
 
@@ -161,6 +226,11 @@ async function onPopState (event) {
 
 	await tick();
 
-	if (historyItem.scrollPosition) setScroll({x: 0, y: 0});
-	if (historyItem.scrollToId) scrollToId(historyItem.scrollToId);
+	if (route.blockScroll) blockScroll();
+	else unblockScroll();
+
+	if (historyItem.scrollPosition || historyItem.scrollToId) {
+		const scrollPosition = historyItem.scrollToId ? getScrollPositionById(historyItem.scrollToId) : historyItem.scrollPosition;
+		if (scrollPosition) setScroll(scrollPosition);
+	}
 }

@@ -1,5 +1,6 @@
 import Home from './Home.svelte';
 import About from './About.svelte';
+import Modal from './Modal.svelte';
 import Error from './Error.svelte';
 import Nested from './Nested.svelte';
 import ChildA from './ChildA.svelte';
@@ -11,6 +12,7 @@ export default {
 	routes: [
 		{ path: '/', component: Home },
 		{ path: '/about', component: About },
+		{ path: '/about/some-modal', components: [About, Modal], blockScroll: true },
 		{
 			path: '/nested',
 			component: Nested,

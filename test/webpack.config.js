@@ -2,6 +2,7 @@ const path = require('path')
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 
 const PRODUCTION = process.env.NODE_ENV === 'production';
@@ -29,6 +30,13 @@ module.exports = {
 				use: 'svelte-loader'
 			},
 			{
+				test: /\.css$/,
+				use: [
+					MiniCssExtractPlugin.loader,
+					'css-loader'
+				]
+			},
+			{
 				test: /node_modules\/svelte\/.*\.mjs$/,
 				resolve: {
 					fullySpecified: false
@@ -38,6 +46,9 @@ module.exports = {
 	},
 	plugins: [
 		new CleanWebpackPlugin(),
+		new MiniCssExtractPlugin({
+			filename: '[name].css'
+		}),
 		new HtmlWebpackPlugin({
 			publicPath: '/',
 			inject: true,

@@ -84,6 +84,18 @@ It's also possible to compose nested components right from the router by doing:
 
 This will render the `Child` component in the `route-child` slot of the `Parent` component.
 
+This is useful, for example, when you want deep linking on modals, or you'd like a modal to close when pressing back. For example:
+
+```js
+// Login modal
+{ path: '/home', components: [Home] },
+{ path: '/home/login', components: [Home, LoginModal] }
+
+// Picture modal
+{ path: '/photos', components: [Photos] },
+{ path: '/photos/:photoId', components: [Photos, PhotoDetailModal] }
+````
+
 ## The `Link` component
 A simple link with a hash will suffice in many cases to trigger a navigation change:
 ```html
