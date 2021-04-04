@@ -1,6 +1,12 @@
 <script>
-	import {currentPath, push} from './index.js';
-	export let path, activeClass = 'active', resetScroll = true, scrollToId, role, id;
+	import {currentPath, push} from './router.js';
+
+	export let path;
+	export let activeClass = 'active';
+	export let resetScroll = true;
+	export let scrollToId = null;
+	export let role = '';
+	export let id = '';
 
 	let classes;
 	export {classes as class};

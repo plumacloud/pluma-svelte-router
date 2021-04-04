@@ -1,6 +1,6 @@
 <script>
 	import Route from './Route.svelte';
-	import {currentRoute, initRouter} from './index.js';
+	import {currentRoute, initRouter} from './router.js';
 
 	export let config;
 
