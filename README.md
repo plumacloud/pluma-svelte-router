@@ -2,6 +2,8 @@
 
 This is a client-side router that uses history mode. It's super early in developement so expect bugs, changes, and dragons.
 
+Demo app: https://pluma-svelte-router-demo.netlify.app/
+
 To install:
 ```
 npm i pluma-svelte-router
