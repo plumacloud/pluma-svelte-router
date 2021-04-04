@@ -1,5 +1,5 @@
 <script>
-	import {back} from '../index.js';
+	import {back} from '../src/index.js';
 
 	function closeModal () {
 		back({

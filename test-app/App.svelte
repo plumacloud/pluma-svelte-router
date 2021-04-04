@@ -1,6 +1,6 @@
 <script>
 	import Menu from './Menu.svelte';
-	import Router from '../Router.svelte';
+	import Router from '../src/Router.svelte';
 	import routerConfig from './router-config.js';
 </script>
 

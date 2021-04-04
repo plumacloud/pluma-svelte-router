@@ -1,5 +1,5 @@
 <script>
-	import Link from '../Link.svelte';
+	import Link from '../src/Link.svelte';
 </script>
 
 <nav class="navbar navbar-expand navbar-dark bg-primary fixed-top">

@@ -1,5 +1,5 @@
 <script>
-	import Link from '../Link.svelte';
+	import Link from '../src/Link.svelte';
 </script>
 
 <h3>Child A</h3>

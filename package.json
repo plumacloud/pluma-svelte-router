@@ -1,17 +1,19 @@
 {
-  "name": "@pluma/svelte-router",
+  "name": "pluma-svelte-router",
+  "svelte": "src/index.js",
+  "module": "dist/index.mjs",
+  "main": "dist/index.js",
   "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "description": "A client-side router for Svelte",
   "scripts": {
-    "dev-test-app": "cd test && webpack serve"
+    "dev-test-app": "cd test-app && webpack serve"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/plumacloud/pluma-svelte-router.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Pier Bover",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/plumacloud/pluma-svelte-router/issues"
