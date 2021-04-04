@@ -12,7 +12,7 @@ export default {
 	routes: [
 		{ path: '/', component: Home },
 		{ path: '/about', component: About },
-		{ path: '/about/some-modal', components: [About, Modal], blockScroll: true },
+		{ path: '/about/some-modal', components: [About, Modal], blockPageScroll: true },
 		{
 			path: '/nested',
 			component: Nested,

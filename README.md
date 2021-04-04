@@ -89,11 +89,11 @@ This is useful, for example, when you want deep linking on modals, or you'd like
 ```js
 // Login modal
 { path: '/home', components: [Home] },
-{ path: '/home/login', components: [Home, LoginModal] }
+{ path: '/home/login', components: [Home, LoginModal], blockPageScroll: true }
 
 // Picture modal
 { path: '/photos', components: [Photos] },
-{ path: '/photos/:photoId', components: [Photos, PhotoDetailModal] }
+{ path: '/photos/:photoId', components: [Photos, PhotoDetailModal], blockPageScroll: true }
 ````
 
 ## The `Link` component
@@ -169,6 +169,13 @@ push({
 * `notFoundComponent` a component reference that will be rendered if there are no matched routes.
 * `renderFirstChild` determines if the first child of a parent route will be rendered by default. The default is `true`.
 * `resetScroll` determines if the scroll should be set to `0,0` when transitioning to a new route. The default is `true`.
+
+### Route configuration options
+* `path` the path of the route
+* `component` the component that will be rendered when the path is matched
+* `components` the component tree that will be rendered when the path is matched
+* `children` an array of children routes
+* `blockPageScroll` whether to removing the scrolling capability of the `body` element by setting `overflow: hidden;`
 
 ## FAQ
 

@@ -6,6 +6,7 @@ export const currentPath = writable('');
 
 let config = {};
 const routerHistory = [];
+let currentHistoryIndex = null;
 
 // ROUTER INIT
 
@@ -38,7 +39,7 @@ function flattenRoutes (routesTree) {
 		const flatRoute = {
 			path: route.path,
 			components: route.component ? [route.component] : route.components,
-			blockScroll: route.blockScroll
+			blockPageScroll: route.blockPageScroll
 		};
 
 		// All paths should start with /
@@ -83,6 +84,10 @@ function getLastHistoryItem () {
 	return routerHistory[routerHistory.length - 1];
 }
 
+function getHistoryItemIndexById (id) {
+	return routerHistory.findIndex((item) => item.id === id);
+}
+
 function setScroll ({x, y}) {
 	window.scrollTo({
 		top: y,
@@ -125,12 +130,12 @@ function getRouteFromPath (path) {
 	return config.errorRoute;
 }
 
-function blockScroll () {
-	console.log('blocking scroll');
+function blockPageScroll () {
+	// console.log('blocking scroll');
 	document.body.style.overflow = 'hidden';
 }
 
-function unblockScroll () {
+function unblockPageScroll () {
 	document.body.style.overflow = 'auto';
 }
 
@@ -142,8 +147,6 @@ function saveScrollPositionToLastHistoryItem () {
 			x: window.scrollX,
 			y: window.scrollY
 		}
-
-		console.log(lastHistoryItem);
 	}
 }
 
@@ -157,6 +160,12 @@ export async function push (options) {
 		}
 	}
 
+	// If we're pushing and we're not on the last history item
+	// we need to delete the following items in the history
+	if (currentHistoryIndex !== null && currentHistoryIndex !== routerHistory.length - 1) {
+		routerHistory.splice(currentHistoryIndex + 1);
+	}
+
 	saveScrollPositionToLastHistoryItem();
 
 	// Find the route from a path
@@ -168,8 +177,8 @@ export async function push (options) {
 
 	await tick();
 
-	if (route.blockScroll) blockScroll();
-	else unblockScroll();
+	if (route.blockPageScroll) blockPageScroll();
+	else unblockPageScroll();
 
 	// Determine the position to scroll to after the navigation
 	let scrollPosition;
@@ -177,7 +186,7 @@ export async function push (options) {
 	// If the route doesn't block scroll
 	// And the router is configured to reset scroll on navigation
 	// And the Link is not blocking the scroll to reset...
-	if (route.blockScroll !== true && config.resetScroll && options.resetScroll !== false) {
+	if (route.blockPageScroll !== true && config.resetScroll && options.resetScroll !== false) {
 		scrollPosition = options.scrollToId ? getScrollPositionById(options.scrollToId) : {x: 0, y: 0};
 		if (scrollPosition) setScroll(scrollPosition);
 	}
@@ -186,14 +195,17 @@ export async function push (options) {
 	const historyItem = {
 		id: Date.now(),
 		path: route.path,
-		blockScroll: route.blockScroll
+		blockPageScroll: route.blockPageScroll
 	}
 
 	if (options.scrollToId) {
 		historyItem.scrollToId = options.scrollToId;
 	}
 
+	// console.log({currentHistoryIndex});
+
 	routerHistory.push(historyItem);
+	currentHistoryIndex = routerHistory.length - 1;
 
 	window.history.pushState({id: historyItem.id}, '', options.path);
 }
@@ -213,7 +225,9 @@ async function onPopState (event) {
 	// Find the history item by using the id
 	const id = event.state.id;
 	const historyItem = getHistoryItemById(id);
+	currentHistoryIndex = getHistoryItemIndexById(id);
 
+	// console.log({currentHistoryIndex});
 	// console.log(historyItem);
 
 	if (!historyItem) return;
@@ -226,8 +240,8 @@ async function onPopState (event) {
 
 	await tick();
 
-	if (route.blockScroll) blockScroll();
-	else unblockScroll();
+	if (route.blockPageScroll) blockPageScroll();
+	else unblockPageScroll();
 
 	if (historyItem.scrollPosition || historyItem.scrollToId) {
 		const scrollPosition = historyItem.scrollToId ? getScrollPositionById(historyItem.scrollToId) : historyItem.scrollPosition;
