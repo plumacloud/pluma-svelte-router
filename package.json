@@ -1,9 +1,15 @@
 {
   "name": "pluma-svelte-router",
   "svelte": "src/index.js",
-  "module": "dist/index.mjs",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "version": "0.0.1",
+  "keywords": [
+    "svelte",
+    "router"
+  ],
+  "files": [
+    "src"
+  ],
   "description": "A client-side router for Svelte",
   "scripts": {
     "dev-test-app": "cd test-app && rollup -c -w",
