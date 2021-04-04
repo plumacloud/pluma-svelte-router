@@ -1,6 +1,6 @@
 {
-  "name": "pluma-svelte-router",
-  "version": "1.0.0",
+  "name": "@pluma/svelte-router",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
