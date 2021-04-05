@@ -1,6 +1,7 @@
 import Home from './components/Home.svelte';
 import About from './components/About.svelte';
 import Modal from './components/Modal.svelte';
+import Hello from './components/Hello.svelte';
 import Error from './components/Error.svelte';
 import Nested from './components/Nested.svelte';
 import ChildA from './components/ChildA.svelte';
@@ -13,6 +14,7 @@ export default {
 		{ path: '/', component: Home },
 		{ path: '/about', component: About },
 		{ path: '/about/some-modal', components: [About, Modal], blockPageScroll: true },
+		{ path: '/hello/:name', component: Hello },
 		{
 			path: '/nested',
 			component: Nested,

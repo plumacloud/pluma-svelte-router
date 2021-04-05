@@ -15,6 +15,9 @@
 				<Link class="nav-link" path="/nested">Nested</Link>
 			</li>
 			<li class="nav-item">
+				<Link class="nav-link" path="/hello/Pepito">Hello <small>(path params)</small></Link>
+			</li>
+			<li class="nav-item">
 				<Link class="nav-link" path="/something">Doesn't exist</Link>
 			</li>
 		</ul>

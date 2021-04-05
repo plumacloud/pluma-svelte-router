@@ -7,12 +7,12 @@
 
 <ul id="tab-menu" class="nav nav-tabs mb-4">
 	<li class="nav-item">
-		<Link class="nav-link" path="/nested/child-a" resetScroll={false}>Child A</Link>
+		<Link class="nav-link" path="/nested/child-a" resetScroll={false}>Child A (no scroll)</Link>
 	</li>
 	<li class="nav-item">
-		<Link class="nav-link" path="/nested/child-b" resetScroll={false}>Child B</Link>
+		<Link class="nav-link" path="/nested/child-b" resetScroll={false}>Child B  (no scroll)</Link>
 	</li>
 </ul>
 
 
-<slot name="route-child"></slot>
+<slot></slot>
