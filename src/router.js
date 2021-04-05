@@ -71,6 +71,10 @@ function flattenRoutes (routesTree) {
 		}
 	});
 
+	routes.forEach((route) => {
+		if (route.path.includes(':')) route.hasParams = true;
+	});
+
 	return routes;
 }
 
@@ -118,12 +122,38 @@ function getScrollPositionById (id) {
 
 function getRouteFromPath (path) {
 	// Clean the path because paths on routes will always start with /
-	path = path.charAt(0) === '#' ? path.slice(1) : path;
 	path = path.charAt(0) !== '/' ? '/' + path : path;
 
-	for (var i = 0; i < config.routes.length; i++) {
+	for (let i = 0; i < config.routes.length; i++) {
 		const route = config.routes[i];
-		if (route.path === path) return route;
+
+		// If the path has parameters
+		if (route.path.includes(':')) {
+			const pathSegments = path.split('/');
+			const routePathSegments = route.path.split('/');
+
+			if (pathSegments.length !== routePathSegments.length) continue;
+
+			console.log(pathSegments, routePathSegments);
+
+			for (let j = 1; j < pathSegments.length; j++) {
+				const isParam = routePathSegments[j].charAt(0) === ':';
+				const isLast = j === pathSegments.length - 1;
+				const segmentsMatch = pathSegments[j] === routePathSegments[j];
+				const hasValue = pathSegments[j] !== '';
+
+				if (!isParam && !segmentsMatch) break;
+
+				if (isParam && !isLast) {
+					if (hasValue) continue
+					else break;
+				}
+
+				if (isLast && segmentsMatch || isLast && isParam && hasValue) return route;
+			}
+		} else if (route.path === path) {
+			return route;
+		}
 	}
 
 	// If we haven't matched a route we return the error route
@@ -150,6 +180,22 @@ function saveScrollPositionToLastHistoryItem () {
 	}
 }
 
+function getParamsFromPath (path, routePath) {
+	const pathSegments = path.split('/');
+	const routePathSegments = routePath.split('/');
+	const params = {};
+
+	for (let i = 1; i < pathSegments.length; i++) {
+		if (routePathSegments[i].charAt(0) === ':') {
+			const paramName = routePathSegments[i].slice(1);
+			console.log(paramName, pathSegments[i]);
+			params[paramName] = pathSegments[i];
+		}
+	}
+
+	return params;
+}
+
 // NAVIGATION
 
 export async function push (options) {
@@ -170,10 +216,11 @@ export async function push (options) {
 
 	// Find the route from a path
 	const route = getRouteFromPath(options.path);
+	const params = route.hasParams ? getParamsFromPath(options.path, route.path) : {};
 
 	// Trigger updates on the UI
 	currentPath.set(route.path);
-	currentRoute.set(route);
+	currentRoute.set({...route, params});
 
 	await tick();
 
@@ -234,9 +281,11 @@ async function onPopState (event) {
 
 	const route = getRouteFromPath(historyItem.path);
 
+	const params = route.hasParams ? getParamsFromPath(historyItem.path, route.path) : {};
+
 	// Trigger updates on the UI
 	currentPath.set(route.path);
-	currentRoute.set(route);
+	currentRoute.set({...route, params});
 
 	await tick();
 
