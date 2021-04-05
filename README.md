@@ -110,11 +110,11 @@ If the first child does have a `path`, it will be available in both the parent p
 
 To disable this behavior use set the `renderFirstChild` option `false` on the router or the parent route.
 
-To tell the router where to render child routes, you need to add a `route-child` slot on the parent component:
+To tell the router where to render child routes, you need to add a default slot on the parent component:
 ```svelte
 // Posts.svelte
 <h1>My posts</h1>
-<slot name="route-child"></slot>
+<slot></slot>
 ```
 
 
@@ -125,16 +125,19 @@ It's possible to compose nested components right from the router by doing:
 { path: '/some-path', components: [Parent, Child] }
 ````
 
-This will render the `Child` component in the `route-child` slot of the `Parent` component:
+This will render the `Child` component in the default slot of the `Parent` component:
 
 ```svelte
 // Parent.svelte
-<slot name="route-child"></slot>
+<slot></slot>
 ```
 
 This feature is useful to use components as layouts or when integrating modals with the router. For example, when you want deep linking on modals, or you'd like a modal to close when pressing back:
 
 ```js
+// Layout
+{ path: '/home', components: [AppLayout, Shell, Home] },
+
 // Picture modal
 { path: '/photos', components: [Photos] },
 { path: '/photos/:photoId', components: [Photos, PhotoDetailModal], blockPageScroll: true }
