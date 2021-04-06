@@ -40,39 +40,41 @@ To test it out, clone this repo and do `npm install && npm run dev-test-app`.
 This example is taken from the [test-app](../test-app/router.js).
 
 ```js
-import Home from './components/Home.svelte';
-import About from './components/About.svelte';
-import Modal from './components/Modal.svelte';
-import Error from './components/Error.svelte';
-import Nested from './components/Nested.svelte';
-import ChildA from './components/ChildA.svelte';
-import ChildB from './components/ChildB.svelte';
-import GrandchildA from './components/GrandchildA.svelte';
-
-export default {
+{
   notFoundComponent: Error,
   routes: [
     { path: '/', component: Home },
     { path: '/about', component: About },
     { path: '/about/some-modal', components: [About, Modal], blockPageScroll: true },
+    { path: '/hello/:name', component: Hello },
     {
       path: '/nested',
       component: Nested,
       children: [
+        { component: DefaultChild },
         {
           path: 'child-a',
           component: ChildA,
           children: [
-            { path: 'grandchild-a', component: GrandchildA }
+            {component: GrandchildA }
           ]
         },
         { path: 'child-b', component: ChildB }
       ]
     }
   ]
-};
+}
 ```
-
+And will produce the following available paths:
+```
+/
+/about
+/about/some-modal
+/hello/:name
+/nested
+/nested/child-a
+/nested/child-b
+```
 ## Configuring routes
 The most basic route must have at least a `path` and a `component` reference:
 ```js
@@ -80,59 +82,57 @@ The most basic route must have at least a `path` and a `component` reference:
 ````
 
 ### Nested routes
-You can add nested routes using the `children` array.
+You can add nested routes using the `children` array:
 ```js
 {
-  path: '/posts',
-  component: Posts,
+  path: '/characters',
+  component: Characters,
   children: [
-    // The path of the first child is optional as it will be rendered at /posts
-    { component: LatestPosts }
-    // Will be available at /posts/hello-world
-    { path: '/hello-world', component: HelloWorld }
+    { path: '/yoda', component: Yoda },
+    { path: '/han-solo', component: HanSolo },
   ]
 }
 ```
+These routes will produce two available paths:
+* `/characters/yoda`
+* `/characters/han-solo`
 
-When accessing a parent route, the first child will always be rendered. In the previous example, the `LatestPosts` component will always be rendered when accessing the `/posts` path.
-
-If the first child does have a `path`, it will be available in both the parent path and its own path:
-```js
-{
-  path: '/posts',
-  component: Posts,
-  children: [
-    // Will be rendered at /posts and /posts/hello-world
-    { path: '/hello-world', component: HelloWorld }
-  ]
-}
-```
-
-To disable this behavior use set the `renderFirstChild` option `false` on the router or the parent route.
-
-To tell the router where to render child routes, you need to add a default slot on the parent component:
+The router will render child routes in the default slot of the parent component:
 ```svelte
-// Posts.svelte
-<h1>My posts</h1>
+// Characters.svelte
+<h1>Star Wars Characters</h1>
 <slot></slot>
 ```
 
+It's possible to add a default first child without a path:
+
+```js
+{
+  path: '/characters',
+  component: Characters,
+  children: [
+    { component: CharacterList },
+    { path: '/yoda', component: Yoda },
+    { path: '/han-solo', component: HanSolo },
+  ]
+}
+```
+Now there will be three paths available:
+* `/characters` which will render the default `CharacterList` inside `Characters`
+* `/characters/yoda`
+* `/characters/han-solo`
+
 
 ### Composing components on the router
-It's possible to compose nested components right from the router by doing:
+Nested components can be composed right from the router by using the `components` array:
 
 ```js
 { path: '/some-path', components: [Parent, Child] }
 ````
 
-This will render the `Child` component in the default slot of the `Parent` component:
+Just as with nested routes, this will render the `Child` component in the default slot of the `Parent` component.
 
-```svelte
-// Parent.svelte
-<slot></slot>
-```
-
-This feature is useful to use components as layouts or when integrating modals with the router. For example, when you want deep linking on modals, or you'd like a modal to close when pressing back:
+This feature is useful for layouts or when integrating modals with the router. For example, when you want deep linking on modals, or you'd like a modal to close when pressing back:
 
 ```js
 // Layout
@@ -160,29 +160,22 @@ See the [test-app](../test-app/components/About.svelte) for an example on using 
 ```
 
 ### Active link behavior
-By default, an `active` CSS class will be added to the rendered `<a>` tag if the `path` prop matches the start or the full path of the current route.
+By default, an `active` CSS class will be added to the rendered `<a>` tag if the `path` prop matches the full path of the current route:
 
-For example, the following `Link` will be active if the current path is `/posts` and also `/posts/hello-world`:
 ```svelte
+// Will be marked as active if the current path is /posts
 <Link path="/posts">Posts</Link>
+```
+
+You might want the active class to be added if the path of the link only matches the start of the current path:
+```svelte
+// Will be marked as active on the /posts but also /posts/hello-world or /posts/anything/here paths
+<Link path="/posts" matchStart={true}>Posts</Link>
 ```
 
 You can add a custom active class with:
 ```svelte
 <Link activeClass="is-active" path="/">Home</Link>
-```
-
-You can implement your custom active behavior by using the `currentPath` store:
-
-```svelte
-<script>
-  import {currentPath} from 'pluma-svelte-router';
-</script>
-
-
-<a class:active={$currentPath === '/about'} href="/about">About</a>
-<a class:active={$currentPath.startsWith('/nested')} href="/nested">Section with children</a>
-<a class:active={$currentPath === '/nested/child' || $currentPath.endsWith('child')} href="/nested/child">Child section</a>
 ```
 
 ## Programmatic navigation
@@ -236,10 +229,9 @@ This router does not support this feature to respect users that may have configu
 
 Features that will be implemented in the not-so-distant future:
 
-* Route params
 * Query strings
 * Route data cache
-* Allow click with modifiers
+* Click on `Link` with modifiers
 * Hooks
 
 Features that will be implemented for the `1.0.0` release:

@@ -4,6 +4,7 @@ import Modal from './components/Modal.svelte';
 import Hello from './components/Hello.svelte';
 import Error from './components/Error.svelte';
 import Nested from './components/Nested.svelte';
+import DefaultChild from './components/DefaultChild.svelte';
 import ChildA from './components/ChildA.svelte';
 import ChildB from './components/ChildB.svelte';
 import GrandchildA from './components/GrandchildA.svelte';
@@ -19,11 +20,12 @@ export default {
 			path: '/nested',
 			component: Nested,
 			children: [
+				{ component: DefaultChild },
 				{
 					path: 'child-a',
 					component: ChildA,
 					children: [
-						{ path: 'grandchild-a', component: GrandchildA }
+						{component: GrandchildA }
 					]
 				},
 				{ path: 'child-b', component: ChildB }

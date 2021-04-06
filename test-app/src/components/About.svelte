@@ -3,10 +3,10 @@
 </script>
 
 <h1>About</h1>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas porttitor diam cursus ligula tristique bibendum. Aliquam at erat quis tellus adipiscing tempus. Cras sed rutrum velit. Curabitur vel lacus eget erat tincidunt fringilla nec in ante. Pellentesque lacinia tellus nec neque tempus fermentum. Pellentesque ligula arcu, auctor at sagittis id, imperdiet eget tortor. Pellentesque imperdiet tempus risus non condimentum. Phasellus ut venenatis turpis. Fusce tincidunt nulla sit amet elit lacinia id </p>
+<p>Watch the browser's address when opening the modal!</p>
 
 <div class="mt-4 mb-4">
-	<Link class="btn btn-primary" role="button" path="/about/some-modal">Open modal <small>(watch the browser's URL)</small></Link>
+	<Link class="btn btn-primary" role="button" path="/about/some-modal">Open modal</Link>
 </div>
 
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas porttitor diam cursus ligula tristique bibendum. Aliquam at erat quis tellus adipiscing tempus. Cras sed rutrum velit. Curabitur vel lacus eget erat tincidunt fringilla nec in ante. Pellentesque lacinia tellus nec neque tempus fermentum. Pellentesque ligula arcu, auctor at sagittis id, imperdiet eget tortor. Pellentesque imperdiet tempus risus non condimentum. Phasellus ut venenatis turpis. Fusce tincidunt nulla sit amet elit lacinia id con ligula, nec vehicula velit sem eu urna. Suspendisse potenti.</p>

@@ -12,7 +12,7 @@
 				<Link class="nav-link" path="/about">About</Link>
 			</li>
 			<li class="nav-item">
-				<Link class="nav-link" path="/nested">Nested</Link>
+				<Link class="nav-link" path="/nested" matchStart={true}>Nested</Link>
 			</li>
 			<li class="nav-item">
 				<Link class="nav-link" path="/hello/Pepito">Hello <small>(path params)</small></Link>

@@ -7,6 +7,7 @@
 	export let scrollToId = null;
 	export let role = '';
 	export let id = '';
+	export let matchStart = false;
 
 	let classes;
 	export {classes as class};
@@ -17,8 +18,7 @@
 
 	$: {
 		href = path;
-		if (href.charAt(0) !== '/' && !href.startsWith('#/')) href = '/' + href;
-		if (href.charAt(0) !== '#') href =  '#' + href;
+		if (href.charAt(0) !== '/') href = '/' + href;
 
 		// If the current route has params we need to determine
 		// if the path of the link matches with the route path
@@ -28,21 +28,24 @@
 			const pathSegments = path.split('/');
 			const routePathSegments = $currentRoute.path.split('/');
 
-			isActive = true;
+			if (!matchStart && pathSegments.length !== routePathSegments.length) {
+				isActive = false;
+			} else {
+				isActive = true;
 
-			// We're only traversing the segments of the link path
-			// because it could be shorter than the full route path
-			// and we want to mark the link as active if it matches
-			// the first part
+				// We're only traversing the segments of the link path
+				// because it could be shorter than the full route path
+				// and we want to mark the link as active if it matches
+				// the first part
 
-			for (let i = 1; i < pathSegments.length; i++) {
-				if (routePathSegments[i].charAt(0) !== ':' && pathSegments[i] !== routePathSegments[i]) {
-					isActive = false;
+				for (let i = 1; i < pathSegments.length; i++) {
+					if (routePathSegments[i].charAt(0) !== ':' && pathSegments[i] !== routePathSegments[i]) {
+						isActive = false;
+					}
 				}
 			}
-
 		} else {
-			isActive = $currentPath === path || (path !== '/' && $currentPath.startsWith(path));
+			isActive = $currentPath === path || (matchStart && path !== '/' && $currentPath.startsWith(path));
 		}
 
 		if (isActive) cssClasses = classes ? classes + ' ' + activeClass : activeClass;

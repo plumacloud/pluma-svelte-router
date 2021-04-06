@@ -13,9 +13,6 @@ let currentHistoryIndex = null;
 export function initRouter (initialConfig) {
 	config.routes = flattenRoutes(initialConfig.routes);
 
-	// Render the first child of the parent route
-	config.renderFirstChild = initialConfig.renderFirstChild || true;
-
 	// Reset the scroll position on route change
 	config.resetScroll = initialConfig.resetScroll || true;
 
@@ -32,12 +29,12 @@ export function initRouter (initialConfig) {
 	push(window.location.pathname);
 }
 
-function flattenRoutes (routesTree) {
+function flattenRoutes (routesTree, depth = 0) {
 	const routes = [];
 
 	routesTree.forEach((route) => {
 		const flatRoute = {
-			path: route.path,
+			path: route.path || '',
 			components: route.component ? [route.component] : route.components,
 			blockPageScroll: route.blockPageScroll
 		};
@@ -46,23 +43,11 @@ function flattenRoutes (routesTree) {
 		if (flatRoute.path.charAt(0) !== '/') flatRoute.path = '/' + flatRoute.path;
 
 		if (route.children) {
-			const children = flattenRoutes(route.children);
-
-			const firstChild = children[0];
-
-			routes.push({
-				path: flatRoute.path,
-				components: config.renderFirstChild ? flatRoute.components : [...flatRoute.components, ...firstChild.components]
-			});
+			const children = flattenRoutes(route.children, depth + 1);
 
 			children.forEach((child, index) => {
-
-				// If the first child does not have a path
-				// it will never be rendered on its own
-				if (index === 0 && !child.path) return;
-
 				routes.push({
-					path: flatRoute.path + child.path,
+					path: child.path && child.path !== '/' ? flatRoute.path + child.path : flatRoute.path,
 					components: [...flatRoute.components, ...child.components]
 				});
 			});
@@ -71,9 +56,14 @@ function flattenRoutes (routesTree) {
 		}
 	});
 
-	routes.forEach((route) => {
-		if (route.path.includes(':')) route.hasParams = true;
-	});
+	// Only do this once when all routes have been flattened
+	if (depth === 0) {
+		routes.forEach((route) => {
+			if (route.path.includes(':')) route.hasParams = true;
+		});
+	}
+
+	console.log(routes);
 
 	return routes;
 }
@@ -127,15 +117,15 @@ function getRouteFromPath (path) {
 	for (let i = 0; i < config.routes.length; i++) {
 		const route = config.routes[i];
 
-		// If the path has parameters
+		// If the path has parameters we need to check whether the segments match
 		if (route.path.includes(':')) {
 			const pathSegments = path.split('/');
 			const routePathSegments = route.path.split('/');
 
+			// If the number of segments doesn't match...
 			if (pathSegments.length !== routePathSegments.length) continue;
 
-			console.log(pathSegments, routePathSegments);
-
+			// Let's compare segment by segment...
 			for (let j = 1; j < pathSegments.length; j++) {
 				const isParam = routePathSegments[j].charAt(0) === ':';
 				const isLast = j === pathSegments.length - 1;
