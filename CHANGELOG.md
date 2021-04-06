@@ -1,3 +1,7 @@
+# 0.0.4
+
+Better implementation of nested routes.
+
 # 0.0.3
 
 ### Fixes
