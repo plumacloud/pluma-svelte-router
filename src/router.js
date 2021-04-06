@@ -291,7 +291,7 @@ async function onPopState (event) {
 	// Find the history item by using the id
 	const id = event.state.id;
 	const historyItem = getHistoryItemById(id);
-	currentHistoryIndex = getHistoryItemIndexById(id);
+	// currentHistoryIndex = getHistoryItemIndexById(id);
 
 	// console.log({currentHistoryIndex});
 	// console.log(historyItem);
@@ -321,7 +321,15 @@ async function onPopState (event) {
 // QUERY PARAMS
 
 export function addQueryParamsToUrl (params) {
+	// Generate the query string
 	const queryString = Object.keys(params).map((key) => `${key}=${params[key]}`).join('&');
+	const fullPath = get(currentPath) + '?' + queryString;
+
+	// Replace the history
 	const state = window.history.state;
-	window.history.replaceState(state, '', get(currentPath) + '?' + queryString);
+	window.history.replaceState(state, '', fullPath);
+
+	// Update the path on the router history item
+	const historyItem = getHistoryItemById(state.id);
+	historyItem.path = fullPath;
 }
