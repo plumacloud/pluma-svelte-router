@@ -55,7 +55,7 @@
 	function onClick (event) {
 
 		// We ignore the click event if it has a modifier
-		if (event.metaKey || event.ctrlKey || event.altKey || evet.shiftKey) return;
+		if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
 
 		event.preventDefault();
 
