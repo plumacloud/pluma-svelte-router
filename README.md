@@ -155,7 +155,7 @@ See the [test-app](../test-app/components/About.svelte) for an example on using 
   import Link from 'pluma-svelte-router';
 </script>
 
-<Link class="nav-link" path="/">Home</Link>
+<Link path="/">Home</Link>
 <Link class="nav-link" path="/about" resetScroll={false}>About</Link>
 ```
 
@@ -197,12 +197,55 @@ push({
 });
 ```
 
+## Scrolling
+
+By default, every route change will reset the scroll to the top left of the page. This can be avoided in three ways:
+
+1. Setting `resetScroll` to `false` on the initial configuration of the router.
+2. Using `resetScroll={false}` on a `<Link>`.
+3. Setting `blockPageScroll` to `true` on a route configuration.
+
+Scroll position is stored when going back and forward.
+
+### How to enable or disable smooth scrolling?
+This router is agnostic to the scrolling behavior. You should respect a user's [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) setting via CSS. See [how Boostrap does it](https://github.com/twbs/bootstrap/blob/644afc276169fd94ee2e6c5c79df8337be1b12ed/scss/_reboot.scss#L28-L36) for example.
+
+## Query string parameters
+
+If there are querystring parameters in the URL, you will be able to read them from the `currentRoute` store:
+
+```svelte
+<script>
+	import {currentRoute} from 'pluma-svelte-router';
+	const queryParams = $currentRoute.query;
+	console.log(queryParams);
+</script>
+```
+
+You can also set parameters to the URL without triggering a page change by using the `addQueryParamsToUrl` utility function:
+
+```svelte
+<script>
+	import {addQueryParamsToUrl} from 'pluma-svelte-router';
+
+	function addParams () {
+		addQueryParamsToUrl({
+			name: 'Pepito',
+			food: 'tacos',
+			age: 33
+		});
+	}
+
+</script>
+
+<button type="button" on:click={addParams}>Add params to query string</button>
+```
 
 ## API
 ### Router configuration options
 
 * `notFoundComponent` a component reference that will be rendered if there are no matched routes.
-* `resetScroll` determines if the scroll should be set to `0,0` when transitioning to a new route. The default is `true`.
+* `resetScroll` determines if the scroll should be set to the top left when transitioning to a new route. The default is `true`.
 
 ### Route configuration options
 * `path` the path of the route
@@ -222,16 +265,11 @@ Common HTML attributes will be applied to the `<a>` tag: `class`, `role`, `id`.
 
 ## FAQ
 
-### How to enable or disable smooth scrolling?
-This router does not support this feature to respect users that may have configured the "reduce motion" accesiblity setting on their OS.
-
 ## Roadmap
 
 Features that will be implemented in the not-so-distant future:
 
-* Query strings
 * Route data cache
-* Click on `Link` with modifiers
 * Hooks
 
 Features that will be implemented for the `1.0.0` release:
