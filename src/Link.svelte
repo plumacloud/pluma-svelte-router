@@ -53,6 +53,12 @@
 	}
 
 	function onClick (event) {
+
+		// We ignore the click event if it has a modifier
+		if (event.metaKey || event.ctrlKey || event.altKey || evet.shiftKey) return;
+
+		event.preventDefault();
+
 		push({
 			path,
 			resetScroll,
@@ -62,4 +68,4 @@
 
 </script>
 
-<a {href} class={cssClasses} on:click|preventDefault={onClick} {role} {id}><slot></slot></a>
+<a {href} class={cssClasses} on:click={onClick} {role} {id}><slot></slot></a>
