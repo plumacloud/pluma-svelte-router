@@ -25,8 +25,8 @@ export function initRouter (initialConfig) {
 	window.addEventListener('popstate', onPopState);
 	history.scrollRestoration = 'manual';
 
-	// push(config.routes[0].path);
-	push(window.location.pathname);
+	const fullPath = window.location.href.replace(window.location.origin, '');
+	push(fullPath);
 }
 
 function flattenRoutes (routesTree, depth = 0) {
@@ -62,8 +62,6 @@ function flattenRoutes (routesTree, depth = 0) {
 			if (route.path.includes(':')) route.hasParams = true;
 		});
 	}
-
-	console.log(routes);
 
 	return routes;
 }
@@ -111,9 +109,6 @@ function getScrollPositionById (id) {
 }
 
 function getRouteFromPath (path) {
-	// Clean the path because paths on routes will always start with /
-	path = path.charAt(0) !== '/' ? '/' + path : path;
-
 	for (let i = 0; i < config.routes.length; i++) {
 		const route = config.routes[i];
 
@@ -186,6 +181,31 @@ function getParamsFromPath (path, routePath) {
 	return params;
 }
 
+function getCleanPath (fullPath) {
+	let path = fullPath.split('#')[0];
+	path = path.split('?')[0];
+	return path;
+}
+
+function getQueryParamsFromPath (path) {
+	if (!path.includes('?')) return {};
+
+	path = path.split('#')[0];
+	path = path.split('?')[1];
+
+	const segments = path.split('&');
+	const params = {};
+
+	segments.forEach((segment) => {
+		const pair = segment.split('=');
+		const paramName = decodeURIComponent(pair[0]);
+		const value = decodeURIComponent(pair[1]);
+		params[paramName] = value;
+	});
+
+	return params;
+}
+
 // NAVIGATION
 
 export async function push (options) {
@@ -205,12 +225,14 @@ export async function push (options) {
 	saveScrollPositionToLastHistoryItem();
 
 	// Find the route from a path
-	const route = getRouteFromPath(options.path);
+	const cleanPath = getCleanPath(options.path);
+	const route = getRouteFromPath(cleanPath);
 	const params = route.hasParams ? getParamsFromPath(options.path, route.path) : {};
+	const query = getQueryParamsFromPath(options.path);
 
 	// Trigger updates on the UI
 	currentPath.set(route.path);
-	currentRoute.set({...route, params});
+	currentRoute.set({...route, params, query});
 
 	await tick();
 
@@ -220,7 +242,7 @@ export async function push (options) {
 	// Determine the position to scroll to after the navigation
 	let scrollPosition;
 
-	// If the route doesn't block scroll
+	// If the route doesn't block page scroll
 	// And the router is configured to reset scroll on navigation
 	// And the Link is not blocking the scroll to reset...
 	if (route.blockPageScroll !== true && config.resetScroll && options.resetScroll !== false) {
@@ -231,7 +253,7 @@ export async function push (options) {
 	// Create a new history item
 	const historyItem = {
 		id: Date.now(),
-		path: route.path,
+		path: options.path,
 		blockPageScroll: route.blockPageScroll
 	}
 
@@ -259,6 +281,13 @@ export function back (options) {
 }
 
 async function onPopState (event) {
+
+	// We don't want to do anything on a hash change
+	if (event.state === null) {
+		event.preventDefault();
+		return;
+	}
+
 	// Find the history item by using the id
 	const id = event.state.id;
 	const historyItem = getHistoryItemById(id);
@@ -269,13 +298,14 @@ async function onPopState (event) {
 
 	if (!historyItem) return;
 
-	const route = getRouteFromPath(historyItem.path);
-
-	const params = route.hasParams ? getParamsFromPath(historyItem.path, route.path) : {};
+	const cleanPath = getCleanPath(historyItem.path);
+	const route = getRouteFromPath(cleanPath);
+	const params = route.hasParams ? getParamsFromPath(cleanPath, route.path) : {};
+	const query = getQueryParamsFromPath(historyItem.path);
 
 	// Trigger updates on the UI
 	currentPath.set(route.path);
-	currentRoute.set({...route, params});
+	currentRoute.set({...route, params, query});
 
 	await tick();
 
@@ -286,4 +316,12 @@ async function onPopState (event) {
 		const scrollPosition = historyItem.scrollToId ? getScrollPositionById(historyItem.scrollToId) : historyItem.scrollPosition;
 		if (scrollPosition) setScroll(scrollPosition);
 	}
+}
+
+// QUERY PARAMS
+
+export function addQueryParamsToUrl (params) {
+	const queryString = Object.keys(params).map((key) => `${key}=${params[key]}`).join('&');
+	const state = window.history.state;
+	window.history.replaceState(state, '', get(currentPath) + '?' + queryString);
 }
