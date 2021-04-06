@@ -6,7 +6,6 @@ export const currentPath = writable('');
 
 let config = {};
 const routerHistory = [];
-let currentHistoryIndex = null;
 
 // ROUTER INIT
 
@@ -216,12 +215,22 @@ export async function push (options) {
 		}
 	}
 
-	// If we're pushing and we're not on the last history item
-	// we need to delete the following items in the history
-	if (currentHistoryIndex !== null && currentHistoryIndex !== routerHistory.length - 1) {
-		routerHistory.splice(currentHistoryIndex + 1);
+	// If we're pushing and we're NOT on the last history item
+	// we need to delete the history items after the current one
+	if (get(currentRoute)) {
+		// Determine if we're on the last history item
+		const historyItemId = get(currentRoute).historyItemId;
+		let isLastHistoryItem = historyItemId === routerHistory[routerHistory.length -1].id;
+
+		if (!isLastHistoryItem) {
+			// Delete all items after the current one
+			const index = getHistoryItemIndexById(historyItemId);
+			routerHistory.splice(index + 1);
+		}
 	}
 
+	// Save the scroll position of the history item
+	// we're going to leave behind after pushing
 	saveScrollPositionToLastHistoryItem();
 
 	// Find the route from a path
@@ -230,29 +239,29 @@ export async function push (options) {
 	const params = route.hasParams ? getParamsFromPath(options.path, route.path) : {};
 	const query = getQueryParamsFromPath(options.path);
 
+	// Generate the history item id as we'll need it later on
+	const historyItemId = Date.now();
+
 	// Trigger updates on the UI
 	currentPath.set(route.path);
-	currentRoute.set({...route, params, query});
+	currentRoute.set({...route, params, query, historyItemId});
 
 	await tick();
 
 	if (route.blockPageScroll) blockPageScroll();
 	else unblockPageScroll();
 
-	// Determine the position to scroll to after the navigation
-	let scrollPosition;
-
 	// If the route doesn't block page scroll
 	// And the router is configured to reset scroll on navigation
 	// And the Link is not blocking the scroll to reset...
 	if (route.blockPageScroll !== true && config.resetScroll && options.resetScroll !== false) {
-		scrollPosition = options.scrollToId ? getScrollPositionById(options.scrollToId) : {x: 0, y: 0};
+		const scrollPosition = options.scrollToId ? getScrollPositionById(options.scrollToId) : {x: 0, y: 0};
 		if (scrollPosition) setScroll(scrollPosition);
 	}
 
 	// Create a new history item
 	const historyItem = {
-		id: Date.now(),
+		id: historyItemId,
 		path: options.path,
 		blockPageScroll: route.blockPageScroll
 	}
@@ -261,10 +270,7 @@ export async function push (options) {
 		historyItem.scrollToId = options.scrollToId;
 	}
 
-	// console.log({currentHistoryIndex});
-
 	routerHistory.push(historyItem);
-	currentHistoryIndex = routerHistory.length - 1;
 
 	window.history.pushState({id: historyItem.id}, '', options.path);
 }
@@ -282,8 +288,11 @@ export function back (options) {
 
 async function onPopState (event) {
 
+	console.log(event);
+
 	// We don't want to do anything on a hash change
 	if (event.state === null) {
+		console.log('no state!');
 		event.preventDefault();
 		return;
 	}
@@ -291,14 +300,10 @@ async function onPopState (event) {
 	// Find the history item by using the id
 	const id = event.state.id;
 	const historyItem = getHistoryItemById(id);
-	// currentHistoryIndex = getHistoryItemIndexById(id);
-
-	// console.log({currentHistoryIndex});
-	// console.log(historyItem);
-
 	if (!historyItem) return;
 
 	const cleanPath = getCleanPath(historyItem.path);
+	console.log({cleanPath});
 	const route = getRouteFromPath(cleanPath);
 	const params = route.hasParams ? getParamsFromPath(cleanPath, route.path) : {};
 	const query = getQueryParamsFromPath(historyItem.path);
