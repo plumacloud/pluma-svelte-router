@@ -5,15 +5,19 @@ export const currentRoute = writable(null);
 export const currentPath = writable('');
 
 let config = {};
-const routerHistory = [];
 
 // ROUTER INIT
 
 export function initRouter (initialConfig) {
 	config.routes = flattenRoutes(initialConfig.routes);
 
-	// Reset the scroll position on route change
+	// Scroll to top on route change
 	config.scrollToTop = initialConfig.scrollToTop || true;
+
+	// Let the browser manage scrolling
+	config.manageScroll = initialConfig.manageScroll || true;
+
+	if (config.manageScroll) history.scrollRestoration = 'manual';
 
 	// Route that will be used if no route is matched
 	config.errorRoute = {
@@ -21,10 +25,8 @@ export function initRouter (initialConfig) {
 		components: [initialConfig.notFoundComponent]
 	}
 
-	history.scrollRestoration = 'manual';
-
 	window.addEventListener('popstate', onPopState);
-	window.addEventListener('scroll', saveScroll, {passive: true});
+	if (config.manageScroll) window.addEventListener('scroll', saveScroll, {passive: true});
 
 	push(getFullBrowserPath());
 }
@@ -223,7 +225,7 @@ export async function push (options) {
 
 	// Save the scroll position to the current history item
 	// we're going to leave behind after pushing
-	saveScrollPositionToCurrentHistoryItem();
+	if (config.manageScroll) saveScrollPositionToCurrentHistoryItem();
 
 	// Find the route from a path
 	const cleanPath = getCleanPath(fullPath);
@@ -241,10 +243,7 @@ export async function push (options) {
 	if (route.blockPageScroll) blockPageScroll();
 	else unblockPageScroll();
 
-	// If the route doesn't block page scroll
-	// And the router is configured to reset scroll on navigation
-	// And the Link is not blocking the scroll to reset...
-	if (route.blockPageScroll !== true && config.scrollToTop && options.scrollToTop !== false) {
+	if (config.manageScroll && route.blockPageScroll !== true && config.scrollToTop && options.scrollToTop !== false) {
 		const scrollPosition = options.scrollToId ? getScrollPositionById(options.scrollToId) : {x: 0, y: 0};
 		if (scrollPosition) setScroll(scrollPosition);
 	}
@@ -287,12 +286,14 @@ async function onPopState (event) {
 
 	await tick();
 
-	if (route.blockPageScroll) blockPageScroll();
-	else unblockPageScroll();
+	if (config.manageScroll) {
+		if (route.blockPageScroll) blockPageScroll();
+		else unblockPageScroll();
 
-	if (historyState.scrollPosition || historyState.scrollToId) {
-		const scrollPosition = historyState.scrollToId ? getScrollPositionById(historyState.scrollToId) : historyState.scrollPosition;
-		if (scrollPosition) setScroll(scrollPosition);
+		if (historyState.scrollPosition || historyState.scrollToId) {
+			const scrollPosition = historyState.scrollToId ? getScrollPositionById(historyState.scrollToId) : historyState.scrollPosition;
+			if (scrollPosition) setScroll(scrollPosition);
+		}
 	}
 }
 

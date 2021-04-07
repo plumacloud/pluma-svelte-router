@@ -246,6 +246,7 @@ You can also set parameters to the URL without triggering a page change by using
 
 * `notFoundComponent` a component reference that will be rendered if there are no matched routes.
 * `scrollToTop` determines if the scroll should be set to the top left when transitioning to a new route. The default is `true`.
+* `manageScroll` if set to `false` all scrolling features of the router will be disabled. The browser will be in charge of restoring scroll poisitons. The default is `true`.
 
 ### Route configuration options
 * `path` the path of the route
