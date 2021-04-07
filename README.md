@@ -2,6 +2,13 @@
 
 This is a client-side router that uses history mode. It's super early in developement so expect bugs, changes, and dragons.
 
+### Features
+* <a href="https://bundlephobia.com/result?p=pluma-svelte-router" target="blank" rel="noopener">Small size</a>
+* No dependencies other than Svelte
+* History API
+* Uses native links for navigation
+* Multiple options to manage scrolling
+
 Demo app: https://pluma-svelte-router-demo.netlify.app/
 
 To install:
@@ -138,7 +145,7 @@ Now there will be three paths available:
 * `/characters/han-solo`
 
 
-### Composing components on the router
+### Component nesting at the router
 Nested components can be composed right from the router by using the `components` array:
 
 ```js
@@ -166,7 +173,9 @@ See the [demo app](../test-app/components/About.svelte) for an example on using 
 
 ## Links
 
-You can use standard HTML links which will trigger router changes by using the `link` action.
+For navigation, you can use standard HTML links.
+
+To trigger route changes use the `link` action:
 
 ```svelte
 <script>
@@ -182,6 +191,8 @@ You can use standard HTML links which will trigger router changes by using the `
 <!-- Navigate and then scroll to an element with an id -->
 <a href="/user/settings" use:link={{scrollToId: 'password-form'}}>Set your password</a>
 ```
+
+The `link` action will be totally bypassed on clicks with modifiers (Alt, Control, etc) to maintain native behavior.
 
 ### Active link behavior
 To highlight an active link use the `active` action.
