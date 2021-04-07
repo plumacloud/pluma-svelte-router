@@ -9,13 +9,13 @@
 
 <ul id="tab-menu" class="nav nav-tabs mb-4">
 	<li class="nav-item">
-		<Link class="nav-link" path="/nested" resetScroll={false}>Default child</Link>
+		<Link class="nav-link" path="/nested" scrollToTop={false}>Default child</Link>
 	</li>
 	<li class="nav-item">
-		<Link class="nav-link" path="/nested/child-a" resetScroll={false}>Child A</Link>
+		<Link class="nav-link" path="/nested/child-a" scrollToTop={false}>Child A</Link>
 	</li>
 	<li class="nav-item">
-		<Link class="nav-link" path="/nested/child-b" resetScroll={false}>Child B</Link>
+		<Link class="nav-link" path="/nested/child-b" scrollToTop={false}>Child B</Link>
 	</li>
 </ul>
 

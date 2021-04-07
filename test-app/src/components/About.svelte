@@ -1,7 +1,7 @@
 <script>
 	import {Link, addQueryParamsToUrl, currentRoute} from 'pluma-svelte-router';
 
-	console.log($currentRoute.query);
+	console.log({query: $currentRoute.query});
 
 	function addParams () {
 		addQueryParamsToUrl({

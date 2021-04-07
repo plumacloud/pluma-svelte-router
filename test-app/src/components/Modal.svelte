@@ -1,10 +1,8 @@
 <script>
-	import {back} from 'pluma-svelte-router';
+	import {push} from 'pluma-svelte-router';
 
 	function closeModal () {
-		back({
-			fallbackPath: '/about'
-		});
+		push('/about');
 	}
 </script>
 <div class="modal show" id="exampleModalLive" tabindex="-1" aria-labelledby="exampleModalLiveLabel" style="" aria-modal="true" role="dialog">
