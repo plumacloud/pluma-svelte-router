@@ -3,10 +3,7 @@
   "svelte": "src/index.js",
   "main": "src/index.js",
   "version": "0.0.7",
-  "keywords": [
-    "svelte",
-    "router"
-  ],
+  "keywords": [],
   "files": [
     "src"
   ],
@@ -20,7 +17,6 @@
     "type": "git",
     "url": "git+https://github.com/plumacloud/pluma-svelte-router.git"
   },
-  "keywords": [],
   "author": "Pier Bover",
   "license": "ISC",
   "bugs": {
@@ -34,6 +30,7 @@
     "rollup": "^2.44.0",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
+    "rollup-plugin-size-snapshot": "^0.12.0",
     "rollup-plugin-svelte": "^7.1.0",
     "rollup-plugin-terser": "^7.0.2",
     "sirv-cli": "^1.0.11",
