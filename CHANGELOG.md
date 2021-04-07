@@ -1,3 +1,8 @@
+# 0.0.8
+
+### Fixes
+* Bug `back()` export
+
 # 0.0.7
 
 ### Improvements
