@@ -57,9 +57,13 @@ function flattenRoutes (routesTree, depth = 0) {
 			const children = flattenRoutes(route.children, depth + 1);
 
 			children.forEach((child, index) => {
+
+				const blockPageScroll = child.blockPageScroll ? child.blockPageScroll : flatRoute.blockPageScroll;
+
 				routes.push({
 					path: child.path && child.path !== '/' ? flatRoute.path + child.path : flatRoute.path,
-					components: [...flatRoute.components, ...child.components]
+					components: [...flatRoute.components, ...child.components],
+					blockPageScroll
 				});
 			});
 		} else {
