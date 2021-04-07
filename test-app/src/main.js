@@ -5,3 +5,5 @@ const app = new App({
 });
 
 export default app;
+
+// export {currentRoute, currentPath, navigate, addQueryParamsToUrl, Router, Route, link, active} from 'pluma-svelte-router';

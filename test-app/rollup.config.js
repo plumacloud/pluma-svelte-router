@@ -7,6 +7,7 @@ import livereload from 'rollup-plugin-livereload';
 import {terser} from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
 import alias from '@rollup/plugin-alias';
+import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -58,7 +59,9 @@ export default {
 		}),
 		!production && serve(),
 		!production && livereload('public'),
-		production && terser()	],
+		sizeSnapshot(),
+		production && terser()
+	],
 	watch: {
 		clearScreen: false
 	}
