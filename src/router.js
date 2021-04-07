@@ -166,8 +166,8 @@ function saveScrollPositionToCurrentHistoryItem () {
 	window.history.replaceState(state, '', getFullBrowserPath());
 }
 
-function getParamsFromPath (path, routePath) {
-	const pathSegments = path.split('/');
+function getParamsFromPath (cleanPath, routePath) {
+	const pathSegments = cleanPath.split('/');
 	const routePathSegments = routePath.split('/');
 	const params = {};
 
@@ -195,18 +195,14 @@ function getFullBrowserPath () {
 function getQueryParamsFromPath (path) {
 	if (!path.includes('?')) return {};
 
-	path = path.split('#')[0];
-	path = path.split('?')[1];
-
-	const segments = path.split('&');
+	if (path.includes('#')) path = path.split('#')[0];
+	const queryString = path.split('?')[1];
+	const searchParams = new URLSearchParams(queryString);
 	const params = {};
 
-	segments.forEach((segment) => {
-		const pair = segment.split('=');
-		const paramName = decodeURIComponent(pair[0]);
-		const value = decodeURIComponent(pair[1]);
-		params[paramName] = value;
-	});
+	for (var pair of searchParams.entries()) {
+		params[pair[0]] = pair[1];
+	}
 
 	return params;
 }
