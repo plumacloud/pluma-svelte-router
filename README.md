@@ -187,13 +187,13 @@ You can add a custom active class with:
 push('/about');
 
 push({
-    path: '/about',
-    scrollToTop: false
+  path: '/about',
+  scrollToTop: false
 });
 
 push({
-    path: '/users/something',
-    scrollToId: 'tab-menu'
+  path: '/users/something',
+  scrollToId: 'tab-menu'
 });
 ```
 
@@ -216,9 +216,9 @@ If there are querystring parameters in the URL, you will be able to read them fr
 
 ```svelte
 <script>
-	import {currentRoute} from 'pluma-svelte-router';
-	const queryParams = $currentRoute.query;
-	console.log(queryParams);
+  import {currentRoute} from 'pluma-svelte-router';
+  const queryParams = $currentRoute.query;
+  console.log(queryParams);
 </script>
 ```
 
@@ -226,16 +226,14 @@ You can also set parameters to the URL without triggering a page change by using
 
 ```svelte
 <script>
-	import {addQueryParamsToUrl} from 'pluma-svelte-router';
+import {addQueryParamsToUrl} from 'pluma-svelte-router';
 
-	function addParams () {
-		addQueryParamsToUrl({
-			name: 'Pepito',
-			food: 'tacos',
-			age: 33
-		});
-	}
-
+function addParams () {
+  addQueryParamsToUrl({
+    name: 'Pepito',
+    food: 'tacos'
+    });
+  }
 </script>
 
 <button type="button" on:click={addParams}>Add params to query string</button>
