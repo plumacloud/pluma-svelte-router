@@ -21,11 +21,21 @@ export function initRouter (initialConfig) {
 		components: [initialConfig.notFoundComponent]
 	}
 
-	window.addEventListener('popstate', onPopState);
 	history.scrollRestoration = 'manual';
 
-	const fullPath = window.location.href.replace(window.location.origin, '');
-	push(fullPath);
+	window.addEventListener('popstate', onPopState);
+	window.addEventListener('scroll', saveScroll, {passive: true});
+
+	push(getFullBrowserPath());
+}
+
+let timeoutId;
+
+function saveScroll () {
+	clearTimeout(timeoutId);
+	timeoutId = setTimeout(() => {
+		saveScrollPositionToCurrentHistoryItem();
+	}, 250);
 }
 
 function flattenRoutes (routesTree, depth = 0) {
@@ -66,18 +76,6 @@ function flattenRoutes (routesTree, depth = 0) {
 }
 
 // UTILS
-
-function getHistoryItemById (id) {
-	return routerHistory.find((item) => item.id === id);
-}
-
-function getLastHistoryItem () {
-	return routerHistory[routerHistory.length - 1];
-}
-
-function getHistoryItemIndexById (id) {
-	return routerHistory.findIndex((item) => item.id === id);
-}
 
 function setScroll ({x, y}) {
 	window.scrollTo({
@@ -153,15 +151,17 @@ function unblockPageScroll () {
 	document.body.style.overflow = 'auto';
 }
 
-function saveScrollPositionToLastHistoryItem () {
-	const lastHistoryItem = getLastHistoryItem();
+function saveScrollPositionToCurrentHistoryItem () {
+	const state = window.history.state;
 
-	if (lastHistoryItem) {
-		lastHistoryItem.scrollPosition = {
-			x: window.scrollX,
-			y: window.scrollY
-		}
-	}
+	if (!state) return;
+
+	state.scrollPosition = {
+		x: window.scrollX,
+		y: window.scrollY
+	};
+
+	window.history.replaceState(state, '', getFullBrowserPath());
 }
 
 function getParamsFromPath (path, routePath) {
@@ -184,6 +184,10 @@ function getCleanPath (fullPath) {
 	let path = fullPath.split('#')[0];
 	path = path.split('?')[0];
 	return path;
+}
+
+function getFullBrowserPath () {
+	return window.location.href.replace(window.location.origin, '');
 }
 
 function getQueryParamsFromPath (path) {
@@ -215,37 +219,23 @@ export async function push (options) {
 		}
 	}
 
-	// If we're pushing and we're NOT on the last history item
-	// we need to delete the history items after the current one
-	if (get(currentRoute)) {
-		// Determine if we're on the last history item
-		const historyItemId = get(currentRoute).historyItemId;
-		let isLastHistoryItem = historyItemId === routerHistory[routerHistory.length -1].id;
+	const fullPath = options.path;
 
-		if (!isLastHistoryItem) {
-			// Delete all items after the current one
-			const index = getHistoryItemIndexById(historyItemId);
-			routerHistory.splice(index + 1);
-		}
-	}
-
-	// Save the scroll position of the history item
+	// Save the scroll position to the current history item
 	// we're going to leave behind after pushing
-	saveScrollPositionToLastHistoryItem();
+	saveScrollPositionToCurrentHistoryItem();
 
 	// Find the route from a path
-	const cleanPath = getCleanPath(options.path);
+	const cleanPath = getCleanPath(fullPath);
 	const route = getRouteFromPath(cleanPath);
-	const params = route.hasParams ? getParamsFromPath(options.path, route.path) : {};
-	const query = getQueryParamsFromPath(options.path);
-
-	// Generate the history item id as we'll need it later on
-	const historyItemId = Date.now();
+	const params = route.hasParams ? getParamsFromPath(cleanPath, route.path) : {};
+	const query = getQueryParamsFromPath(fullPath);
 
 	// Trigger updates on the UI
 	currentPath.set(route.path);
-	currentRoute.set({...route, params, query, historyItemId});
+	currentRoute.set({...route, params, query});
 
+	// Wait until UI has updated
 	await tick();
 
 	if (route.blockPageScroll) blockPageScroll();
@@ -259,54 +249,37 @@ export async function push (options) {
 		if (scrollPosition) setScroll(scrollPosition);
 	}
 
-	// Create a new history item
-	const historyItem = {
-		id: historyItemId,
-		path: options.path,
+	// Create a new history state
+	const historyState = {
 		blockPageScroll: route.blockPageScroll
 	}
 
 	if (options.scrollToId) {
-		historyItem.scrollToId = options.scrollToId;
+		historyState.scrollToId = options.scrollToId;
 	}
 
-	routerHistory.push(historyItem);
-
-	window.history.pushState({id: historyItem.id}, '', options.path);
+	window.history.pushState(historyState, '', fullPath);
 }
 
-export function back (options) {
-	if (options.fallbackPath && routerHistory.length === 1) {
-		console.log('fallback!', routerHistory.length);
-		push(options.fallbackPath);
-	} else {
-		console.log('going back!');
-		saveScrollPositionToLastHistoryItem();
-		window.history.back();
-	}
+export function back () {
+	saveScrollPositionToCurrentHistoryItem();
+	window.history.back();
 }
 
 async function onPopState (event) {
 
-	console.log(event);
-
 	// We don't want to do anything on a hash change
 	if (event.state === null) {
-		console.log('no state!');
 		event.preventDefault();
 		return;
 	}
 
-	// Find the history item by using the id
-	const id = event.state.id;
-	const historyItem = getHistoryItemById(id);
-	if (!historyItem) return;
-
-	const cleanPath = getCleanPath(historyItem.path);
-	console.log({cleanPath});
+	const historyState = event.state;
+	const fullPath = getFullBrowserPath();
+	const cleanPath = getCleanPath(fullPath);
 	const route = getRouteFromPath(cleanPath);
 	const params = route.hasParams ? getParamsFromPath(cleanPath, route.path) : {};
-	const query = getQueryParamsFromPath(historyItem.path);
+	const query = getQueryParamsFromPath(fullPath);
 
 	// Trigger updates on the UI
 	currentPath.set(route.path);
@@ -317,8 +290,8 @@ async function onPopState (event) {
 	if (route.blockPageScroll) blockPageScroll();
 	else unblockPageScroll();
 
-	if (historyItem.scrollPosition || historyItem.scrollToId) {
-		const scrollPosition = historyItem.scrollToId ? getScrollPositionById(historyItem.scrollToId) : historyItem.scrollPosition;
+	if (historyState.scrollPosition || historyState.scrollToId) {
+		const scrollPosition = historyState.scrollToId ? getScrollPositionById(historyState.scrollToId) : historyState.scrollPosition;
 		if (scrollPosition) setScroll(scrollPosition);
 	}
 }
@@ -333,8 +306,4 @@ export function addQueryParamsToUrl (params) {
 	// Replace the history
 	const state = window.history.state;
 	window.history.replaceState(state, '', fullPath);
-
-	// Update the path on the router history item
-	const historyItem = getHistoryItemById(state.id);
-	historyItem.path = fullPath;
 }
