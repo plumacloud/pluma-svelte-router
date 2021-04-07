@@ -174,7 +174,6 @@ function getParamsFromPath (cleanPath, routePath) {
 	for (let i = 1; i < pathSegments.length; i++) {
 		if (routePathSegments[i].charAt(0) === ':') {
 			const paramName = routePathSegments[i].slice(1);
-			console.log(paramName, pathSegments[i]);
 			params[paramName] = pathSegments[i];
 		}
 	}
