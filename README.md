@@ -3,7 +3,7 @@
 This is a client-side router that uses history mode. It's super early in developement so expect bugs, changes, and dragons.
 
 ### Features
-* <a href="https://bundlephobia.com/result?p=pluma-svelte-router" target="blank" rel="noopener">Small size</a>
+* <a href="https://bundlephobia.com/result?p=pluma-svelte-router" target="_blank" rel="noopener">Small size</a>
 * No dependencies other than Svelte
 * History API
 * Uses native links for navigation
