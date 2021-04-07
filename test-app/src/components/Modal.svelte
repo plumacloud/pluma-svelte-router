@@ -1,8 +1,8 @@
 <script>
-	import {push} from 'pluma-svelte-router';
+	import {navigate} from 'pluma-svelte-router';
 
 	function closeModal () {
-		push('/about');
+		navigate('/about');
 	}
 </script>
 <div class="modal show" id="exampleModalLive" tabindex="-1" aria-labelledby="exampleModalLiveLabel" style="" aria-modal="true" role="dialog">
