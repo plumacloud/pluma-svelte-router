@@ -210,9 +210,19 @@ function getQueryParamsFromPath (path) {
 	return params;
 }
 
+export function addQueryParamsToUrl (params) {
+	// Generate the query string
+	const queryString = Object.keys(params).map((key) => `${key}=${params[key]}`).join('&');
+	const fullPath = get(currentPath) + '?' + queryString;
+
+	// Replace the history
+	const state = window.history.state;
+	window.history.replaceState(state, '', fullPath);
+}
+
 // NAVIGATION
 
-export async function push (options) {
+export async function navigate (options) {
 
 	if (typeof options === 'string') {
 		options = {
@@ -221,10 +231,6 @@ export async function push (options) {
 	}
 
 	const fullPath = options.path;
-
-	// Save the scroll position to the current history item
-	// we're going to leave behind after pushing
-	if (config.manageScroll) saveScrollPositionToCurrentHistoryItem();
 
 	// Find the route from a path
 	const cleanPath = getCleanPath(fullPath);
@@ -251,19 +257,12 @@ export async function push (options) {
 
 	// Create a new history state
 	const historyState = {
-		blockPageScroll: route.blockPageScroll
+		blockPageScroll: route.blockPageScroll,
+		scrollToId: options.scrollToId
 	}
 
-	if (options.scrollToId) {
-		historyState.scrollToId = options.scrollToId;
-	}
-
-	window.history.pushState(historyState, '', fullPath);
-}
-
-export function back () {
-	saveScrollPositionToCurrentHistoryItem();
-	window.history.back();
+	if (options.replace) window.history.replaceState(historyState, '', fullPath);
+	else window.history.pushState(historyState, '', fullPath);
 }
 
 async function onPopState (event) {
@@ -296,16 +295,4 @@ async function onPopState (event) {
 			if (scrollPosition) setScroll(scrollPosition);
 		}
 	}
-}
-
-// QUERY PARAMS
-
-export function addQueryParamsToUrl (params) {
-	// Generate the query string
-	const queryString = Object.keys(params).map((key) => `${key}=${params[key]}`).join('&');
-	const fullPath = get(currentPath) + '?' + queryString;
-
-	// Replace the history
-	const state = window.history.state;
-	window.history.replaceState(state, '', fullPath);
 }

@@ -1,4 +1,4 @@
-import {push} from '../router.js';
+import {navigate} from '../router.js';
 
 function onClick (options) {
 
@@ -22,7 +22,7 @@ function onClick (options) {
 			path = event.target.href.replace(window.location.origin, '');
 		}
 
-		push({
+		navigate({
 			path,
 			scrollToTop,
 			scrollToId
