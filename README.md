@@ -205,20 +205,42 @@ By default, this will add the `active` CSS class to the element, but you can con
 
 ## Programmatic navigation
 
-### `push()`
+To go back and forward you can simply do:
 
 ```js
-// You can simply use a path
-push('/about');
+// Go back
+window.history.back();
 
-push({
+// Go forward
+window.history.forward();
+```
+
+### `navigate()`
+
+To navigate to a new route use the `navigate()` function:
+
+```js
+import {navigate} from 'pluma-svelte-router';
+
+// You can simply use a path
+navigate('/about');
+
+// Navigate but replace current history item instead of pushing a new route
+navigate({
+  path: '/about',
+  replace: true
+});
+
+// Navigate and don't scroll to the top
+navigate({
   path: '/about',
   scrollToTop: false
 });
 
-push({
-  path: '/users/something',
-  scrollToId: 'tab-menu'
+// Navigate and scroll to an id
+navigate({
+  path: '/user/settings',
+  scrollToId: 'password-form'
 });
 ```
 
