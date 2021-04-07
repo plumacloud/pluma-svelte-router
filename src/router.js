@@ -47,7 +47,7 @@ function flattenRoutes (routesTree, depth = 0) {
 		const flatRoute = {
 			path: route.path || '',
 			components: route.component ? [route.component] : route.components,
-			blockPageScroll: route.blockPageScroll
+			blockPageScroll: typeof route.blockPageScroll === 'undefined' ? false : route.blockPageScroll
 		};
 
 		// All paths should start with /
