@@ -1,8 +1,6 @@
 <script>
 	import {Link, addQueryParamsToUrl, currentRoute} from 'pluma-svelte-router';
 
-	console.log({query: $currentRoute.query});
-
 	function addParams () {
 		addQueryParamsToUrl({
 			name: 'Pepito',
@@ -23,6 +21,9 @@
 <div class="mt-4 mb-4">
 	<button type="button" class="btn btn-primary" on:click={addParams}>Add params to query string</button>
 </div>
+
+<h3>Query params</h3>
+<pre>{JSON.stringify($currentRoute.query)}</pre>
 
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas porttitor diam cursus ligula tristique bibendum. Aliquam at erat quis tellus adipiscing tempus. Cras sed rutrum velit. Curabitur vel lacus eget erat tincidunt fringilla nec in ante. Pellentesque lacinia tellus nec neque tempus fermentum. Pellentesque ligula arcu, auctor at sagittis id, imperdiet eget tortor. Pellentesque imperdiet tempus risus non condimentum. Phasellus ut venenatis turpis. Fusce tincidunt nulla sit amet elit lacinia id con ligula, nec vehicula velit sem eu urna. Suspendisse potenti.</p>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas porttitor diam cursus ligula tristique bibendum. Aliquam at erat quis tellus adipiscing tempus. Cras sed rutrum velit. Curabitur vel lacus eget erat tincidunt fringilla nec in ante. Pellentesque lacinia tellus nec neque tempus fermentum. Pellentesque ligula arcu, auctor at sagittis id, imperdiet eget tortor. Pellentesque imperdiet tempus risus non condimentum. Phasellus ut venenatis turpis. Fusce tincidunt nulla sit amet elit lacinia id consequat eros lacinia. Phasellus ut justo velit. Aenean dignissim, nunc vitae molestie blandit, mi diam vehicula ligula, nec vehicula velit sem eu urna. Suspendisse potenti.</p>
