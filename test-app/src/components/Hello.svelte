@@ -2,4 +2,5 @@
 	import {currentRoute} from 'pluma-svelte-router';
 </script>
 
-<h1>Hello {$currentRoute.params.name} !</h1>
+<h1>Path params</h1>
+<pre>{JSON.stringify($currentRoute.params)}</pre>

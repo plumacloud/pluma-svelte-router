@@ -1,24 +1,24 @@
 <script>
-	import {Link} from 'pluma-svelte-router';
+	import {link, active} from 'pluma-svelte-router';
 </script>
 
 <nav class="navbar navbar-expand navbar-dark bg-primary fixed-top">
 	<div class="container-fluid">
 		<ul class="navbar-nav">
 			<li class="nav-item">
-				<Link class="nav-link" path="/">Home</Link>
+				<a class="nav-link" href="/" use:link use:active>Home</a>
 			</li>
 			<li class="nav-item">
-				<Link class="nav-link" path="/about">About</Link>
+				<a class="nav-link" href="/about" use:link use:active>About</a>
 			</li>
 			<li class="nav-item">
-				<Link class="nav-link" path="/nested" matchStart={true}>Nested</Link>
+				<a class="nav-link" href="/nested" use:link use:active={{matchStart: true}}>Nested</a>
 			</li>
 			<li class="nav-item">
-				<Link class="nav-link" path="/hello/Pepito">Hello <small>(path params)</small></Link>
+				<a class="nav-link" href="/hello/Pepito" use:link use:active>Hello <small>(path params)</small></a>
 			</li>
 			<li class="nav-item">
-				<Link class="nav-link" path="/something">Doesn't exist</Link>
+				<a class="nav-link" href="/something" use:link use:active>Error</a>
 			</li>
 		</ul>
 	</div>

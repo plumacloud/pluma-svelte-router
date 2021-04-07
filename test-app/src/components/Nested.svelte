@@ -1,5 +1,7 @@
 <script>
-	import {Link} from 'pluma-svelte-router';
+	import {link, active} from 'pluma-svelte-router';
+
+	const linkOptions = {scrollToTop: false};
 </script>
 
 <h1>Nested</h1>
@@ -9,13 +11,13 @@
 
 <ul id="tab-menu" class="nav nav-tabs mb-4">
 	<li class="nav-item">
-		<Link class="nav-link" path="/nested" scrollToTop={false}>Default child</Link>
+		<a class="nav-link" href="/nested" use:link={linkOptions} use:active>Default child</a>
 	</li>
 	<li class="nav-item">
-		<Link class="nav-link" path="/nested/child-a" scrollToTop={false}>Child A</Link>
+		<a class="nav-link" href="/nested/child-a" use:link={linkOptions} use:active>Child A</a>
 	</li>
 	<li class="nav-item">
-		<Link class="nav-link" path="/nested/child-b" scrollToTop={false}>Child B</Link>
+		<a class="nav-link" href="/nested/child-b" use:link={linkOptions} use:active>Child B</a>
 	</li>
 </ul>
 
