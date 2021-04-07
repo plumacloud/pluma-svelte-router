@@ -4,8 +4,7 @@
 	function addParams () {
 		addQueryParamsToUrl({
 			name: 'Pepito',
-			food: 'tacos',
-			age: 33
+			food: 'tacos'
 		});
 	}
 
@@ -18,11 +17,12 @@
 	<Link class="btn btn-primary" role="button" path="/about/some-modal">Open modal</Link>
 </div>
 
+<h3>Query params</h3>
+<p>Add query params to the URL with this button, and then either refresh or navigate back and forth.</p>
 <div class="mt-4 mb-4">
 	<button type="button" class="btn btn-primary" on:click={addParams}>Add params to query string</button>
 </div>
-
-<h3>Query params</h3>
+<h5>Current route query params</h5>
 <pre>{JSON.stringify($currentRoute.query)}</pre>
 
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas porttitor diam cursus ligula tristique bibendum. Aliquam at erat quis tellus adipiscing tempus. Cras sed rutrum velit. Curabitur vel lacus eget erat tincidunt fringilla nec in ante. Pellentesque lacinia tellus nec neque tempus fermentum. Pellentesque ligula arcu, auctor at sagittis id, imperdiet eget tortor. Pellentesque imperdiet tempus risus non condimentum. Phasellus ut venenatis turpis. Fusce tincidunt nulla sit amet elit lacinia id con ligula, nec vehicula velit sem eu urna. Suspendisse potenti.</p>
