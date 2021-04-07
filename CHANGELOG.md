@@ -1,3 +1,16 @@
+# 0.0.7
+
+### Improvements
+* Added `link` and `active` actions
+* Improved scroll management
+
+### Breaking changes
+* `push()` renamed to `navigate()`
+* `Link` component deleted
+
+### Fixes
+* Resolved a bug with `blockPageScroll` and nested routes
+
 # 0.0.6
 
 ### Improvements
