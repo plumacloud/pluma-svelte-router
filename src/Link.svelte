@@ -3,7 +3,7 @@
 
 	export let path;
 	export let activeClass = 'active';
-	export let resetScroll = true;
+	export let scrollToTop = true;
 	export let scrollToId = null;
 	export let role = '';
 	export let id = '';
@@ -61,7 +61,7 @@
 
 		push({
 			path,
-			resetScroll,
+			scrollToTop,
 			scrollToId
 		});
 	}

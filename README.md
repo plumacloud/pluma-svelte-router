@@ -156,7 +156,7 @@ See the [test-app](../test-app/components/About.svelte) for an example on using 
 </script>
 
 <Link path="/">Home</Link>
-<Link class="nav-link" path="/about" resetScroll={false}>About</Link>
+<Link class="nav-link" path="/about" scrollToTop={false}>About</Link>
 ```
 
 ### Active link behavior
@@ -188,7 +188,7 @@ push('/about');
 
 push({
     path: '/about',
-    resetScroll: false
+    scrollToTop: false
 });
 
 push({
@@ -201,8 +201,8 @@ push({
 
 By default, every route change will reset the scroll to the top left of the page. This can be avoided in three ways:
 
-1. Setting `resetScroll` to `false` on the initial configuration of the router.
-2. Using `resetScroll={false}` on a `<Link>`.
+1. Setting `scrollToTop` to `false` on the initial configuration of the router.
+2. Using `scrollToTop={false}` on a `<Link>`.
 3. Setting `blockPageScroll` to `true` on a route configuration.
 
 Scroll position is stored when going back and forward.
@@ -245,7 +245,7 @@ You can also set parameters to the URL without triggering a page change by using
 ### Router configuration options
 
 * `notFoundComponent` a component reference that will be rendered if there are no matched routes.
-* `resetScroll` determines if the scroll should be set to the top left when transitioning to a new route. The default is `true`.
+* `scrollToTop` determines if the scroll should be set to the top left when transitioning to a new route. The default is `true`.
 
 ### Route configuration options
 * `path` the path of the route
@@ -258,7 +258,7 @@ You can also set parameters to the URL without triggering a page change by using
 
 * `path` the router path that will be triggered.
 * `activeClass` the CSS class that will be applied is the `Link` is deemed to be active. By default the CSS class is `active`.
-* `resetScroll` determines whether the router should scroll to the top left of the page when navigating. The default is `true`.
+* `scrollToTop` determines whether the router should scroll to the top left of the page when navigating. The default is `true`.
 * `scrollToId` determines if the router should scroll to an element with a particular `id` after transitioning to the next page. The router will try to center the element in the center of the viewport.
 
 Common HTML attributes will be applied to the `<a>` tag: `class`, `role`, `id`.

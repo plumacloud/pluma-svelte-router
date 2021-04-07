@@ -13,7 +13,7 @@ export function initRouter (initialConfig) {
 	config.routes = flattenRoutes(initialConfig.routes);
 
 	// Reset the scroll position on route change
-	config.resetScroll = initialConfig.resetScroll || true;
+	config.scrollToTop = initialConfig.scrollToTop || true;
 
 	// Route that will be used if no route is matched
 	config.errorRoute = {
@@ -244,7 +244,7 @@ export async function push (options) {
 	// If the route doesn't block page scroll
 	// And the router is configured to reset scroll on navigation
 	// And the Link is not blocking the scroll to reset...
-	if (route.blockPageScroll !== true && config.resetScroll && options.resetScroll !== false) {
+	if (route.blockPageScroll !== true && config.scrollToTop && options.scrollToTop !== false) {
 		const scrollPosition = options.scrollToId ? getScrollPositionById(options.scrollToId) : {x: 0, y: 0};
 		if (scrollPosition) setScroll(scrollPosition);
 	}
