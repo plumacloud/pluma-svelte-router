@@ -1,5 +1,5 @@
 <script>
-	import {Link, addQueryParamsToUrl, currentRoute} from 'pluma-svelte-router';
+	import {addQueryParamsToUrl, currentRoute, navigate} from 'pluma-svelte-router';
 
 	function addParams () {
 		addQueryParamsToUrl({
@@ -8,13 +8,17 @@
 		});
 	}
 
+	function openModal () {
+		navigate('/about/some-modal');
+	}
+
 </script>
 
 <h1>About</h1>
 <p>Watch the browser's address when opening the modal!</p>
 
 <div class="mt-4 mb-4">
-	<Link class="btn btn-primary" role="button" path="/about/some-modal">Open modal</Link>
+	<button type="button" class="btn btn-primary" on:click={openModal}>Open modal</button>
 </div>
 
 <h3>Query params</h3>

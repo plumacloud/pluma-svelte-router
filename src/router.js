@@ -28,7 +28,7 @@ export function initRouter (initialConfig) {
 	window.addEventListener('popstate', onPopState);
 	if (config.manageScroll) window.addEventListener('scroll', saveScroll, {passive: true});
 
-	push(getFullBrowserPath());
+	navigate(getFullBrowserPath());
 }
 
 let timeoutId;
