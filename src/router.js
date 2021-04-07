@@ -12,10 +12,10 @@ export function initRouter (initialConfig) {
 	config.routes = flattenRoutes(initialConfig.routes);
 
 	// Scroll to top on route change
-	config.scrollToTop = initialConfig.scrollToTop || true;
+	config.scrollToTop = typeof initialConfig.scrollToTop === 'undefined' ? true : initialConfig.scrollToTop;
 
 	// Let the browser manage scrolling
-	config.manageScroll = initialConfig.manageScroll || true;
+	config.manageScroll = typeof initialConfig.manageScroll === 'undefined' ? true : initialConfig.manageScroll;
 
 	if (config.manageScroll) history.scrollRestoration = 'manual';
 
@@ -240,12 +240,14 @@ export async function push (options) {
 	// Wait until UI has updated
 	await tick();
 
-	if (route.blockPageScroll) blockPageScroll();
-	else unblockPageScroll();
+	if (config.manageScroll) {
+		if (route.blockPageScroll) blockPageScroll();
+		else unblockPageScroll();
 
-	if (config.manageScroll && route.blockPageScroll !== true && config.scrollToTop && options.scrollToTop !== false) {
-		const scrollPosition = options.scrollToId ? getScrollPositionById(options.scrollToId) : {x: 0, y: 0};
-		if (scrollPosition) setScroll(scrollPosition);
+		if (route.blockPageScroll !== true && config.scrollToTop && options.scrollToTop !== false) {
+			const scrollPosition = options.scrollToId ? getScrollPositionById(options.scrollToId) : {x: 0, y: 0};
+			if (scrollPosition) setScroll(scrollPosition);
+		}
 	}
 
 	// Create a new history state
