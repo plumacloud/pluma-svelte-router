@@ -122,7 +122,7 @@ this configuration will produce the following available paths:
 
 ## The `RouterView` component
 
-This component simply renders the current route and nested routes. It does not contain any logic or state. You can freely add it, remove it, or move it around as you see fit. This will not change the state of router.
+This component simply renders the current route and nested routes. It does not contain any logic or state. You can freely add it, remove it, or move it around as you see fit. This will not change the state of the router.
 
 For example:
 
@@ -170,7 +170,7 @@ Path parameters will be available in the `params` object of the `currentRoute` s
 
 ### Meta data
 
-You can add also add a `meta` object with custom data you can read from the `onRouteMatch` hook, or from the `currentRoute` store:
+You can also add a `meta` object to your routes with custom data. You can read this data from the `onRouteMatch` hook, or from the `currentRoute` store:
 
 ```js
 {
@@ -205,7 +205,7 @@ The router will render child routes in the default slot of the parent component:
 <slot></slot>
 ```
 
-So the path `/characters/yoda` will render `Yoda` inside `Characters`.
+When matching the path `/characters/yoda`, the `Yoda` component will be rendered inside `Characters`.
 
 It's possible to add a default first child without a path:
 
@@ -373,7 +373,7 @@ function addParams () {
 <button type="button" on:click={addParams}>Add params to query string</button>
 ```
 
-## `onRouteMatch` hooks
+## `onRouteMatch` hook
 
 This router has a single global hook which is triggered when `navigate()` is used from the `link` action, or from programmatic navigation. The hook won't be triggered when going back or forward.
 
