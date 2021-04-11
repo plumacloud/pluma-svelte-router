@@ -336,13 +336,6 @@ async function onPopState (event) {
 		fullRequestPath: fullPath
 	};
 
-	if (config.onRouteMatch) {
-		await config.onRouteMatch({
-			from: get(currentRoute),
-			to: requestedRoute
-		});
-	}
-
 	// Trigger updates on the UI
 	currentPath.set(route.path);
 	currentRoute.set({...route, params, query});
