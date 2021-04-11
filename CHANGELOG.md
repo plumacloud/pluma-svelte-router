@@ -1,3 +1,8 @@
+# 0.0.10
+
+### Fixes
+* `onPopState` hook bug
+
 # 0.0.9
 
 ### New features
