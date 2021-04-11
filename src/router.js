@@ -3,12 +3,23 @@ import {tick} from 'svelte';
 
 export const currentRoute = writable(null);
 export const currentPath = writable('');
+export const routerState = writable('');
 
 let config = {};
 
 // ROUTER INIT
 
 export function initRouter (initialConfig) {
+
+	// This may not be necessary...
+	if (document.readyState !== 'complete') {
+		document.addEventListener('readystatechange', () => {
+			initRouter(initialConfig);
+		});
+
+		return;
+	}
+
 	config.routes = flattenRoutes(initialConfig.routes);
 
 	// Scroll to top on route change
@@ -17,27 +28,25 @@ export function initRouter (initialConfig) {
 	// Let the browser manage scrolling
 	config.manageScroll = typeof initialConfig.manageScroll === 'undefined' ? true : initialConfig.manageScroll;
 
+	// Hooks
+	config.onRouteMatch = initialConfig.onRouteMatch;
+
 	if (config.manageScroll) history.scrollRestoration = 'manual';
 
 	// Route that will be used if no route is matched
 	config.errorRoute = {
 		path: '',
-		components: [initialConfig.notFoundComponent]
+		components: initialConfig.notFoundComponents || [initialConfig.notFoundComponent],
+		meta: {}
 	}
 
 	window.addEventListener('popstate', onPopState);
-	if (config.manageScroll) window.addEventListener('scroll', saveScroll, {passive: true});
+	if (config.manageScroll) window.addEventListener('scroll', saveScrollDebounce, {passive: true});
 
-	navigate(getFullBrowserPath());
-}
-
-let timeoutId;
-
-function saveScroll () {
-	clearTimeout(timeoutId);
-	timeoutId = setTimeout(() => {
-		saveScrollPositionToCurrentHistoryItem();
-	}, 250);
+	navigate({
+		path: getFullBrowserPath(),
+		addToHistory: false
+	});
 }
 
 function flattenRoutes (routesTree, depth = 0) {
@@ -47,7 +56,8 @@ function flattenRoutes (routesTree, depth = 0) {
 		const flatRoute = {
 			path: route.path || '',
 			components: route.component ? [route.component] : route.components,
-			blockPageScroll: typeof route.blockPageScroll === 'undefined' ? false : route.blockPageScroll
+			blockPageScroll: typeof route.blockPageScroll === 'undefined' ? false : route.blockPageScroll,
+			meta: route.meta || {}
 		};
 
 		// All paths should start with /
@@ -63,7 +73,8 @@ function flattenRoutes (routesTree, depth = 0) {
 				routes.push({
 					path: child.path && child.path !== '/' ? flatRoute.path + child.path : flatRoute.path,
 					components: [...flatRoute.components, ...child.components],
-					blockPageScroll
+					blockPageScroll,
+					meta: {...flatRoute.meta, ...child.meta}
 				});
 			});
 		} else {
@@ -71,17 +82,28 @@ function flattenRoutes (routesTree, depth = 0) {
 		}
 	});
 
-	// Only do this once when all routes have been flattened
+	// Only do this once all routes have been flattened
 	if (depth === 0) {
 		routes.forEach((route) => {
 			if (route.path.includes(':')) route.hasParams = true;
 		});
+
+		// console.log(routes);
 	}
 
 	return routes;
 }
 
 // UTILS
+
+let timeoutId;
+
+function saveScrollDebounce () {
+	clearTimeout(timeoutId);
+	timeoutId = setTimeout(() => {
+		saveScrollPositionToCurrentHistoryItem();
+	}, 250);
+}
 
 function setScroll ({x, y}) {
 	window.scrollTo({
@@ -230,17 +252,32 @@ export async function navigate (options) {
 		}
 	}
 
+	// console.log({options});
+
 	const fullPath = options.path;
 
 	// Find the route from a path
 	const cleanPath = getCleanPath(fullPath);
 	const route = getRouteFromPath(cleanPath);
+
+	// console.log(route);
+
 	const params = route.hasParams ? getParamsFromPath(cleanPath, route.path) : {};
 	const query = getQueryParamsFromPath(fullPath);
 
-	// Trigger updates on the UI
-	currentPath.set(route.path);
-	currentRoute.set({...route, params, query});
+	const requestedRoute = {
+		...route,
+		params,
+		query,
+		fullRequestPath: fullPath
+	};
+
+	if (config.onRouteMatch) {
+		const from = get(currentRoute);
+		const to = requestedRoute;
+		const allowNavigation = config.onRouteMatch(from, to);
+		if (!allowNavigation) return;
+	}
 
 	// Wait until UI has updated
 	await tick();
@@ -257,12 +294,24 @@ export async function navigate (options) {
 
 	// Create a new history state
 	const historyState = {
-		blockPageScroll: route.blockPageScroll,
-		scrollToId: options.scrollToId
+		blockPageScroll: route.blockPageScroll
 	}
 
-	if (options.replace) window.history.replaceState(historyState, '', fullPath);
-	else window.history.pushState(historyState, '', fullPath);
+	if (options.scrollToId) historyState.scrollToId = options.scrollToId;
+
+	// console.log({fullPath, historyState});
+
+	if (options.addToHistory !== false) {
+		if (options.replace) {
+			window.history.replaceState({}, '', fullPath);
+		} else {
+			window.history.pushState({}, '', fullPath);
+		}
+	}
+
+	// Trigger updates on the UI
+	currentPath.set(route.path);
+	currentRoute.set(requestedRoute);
 }
 
 async function onPopState (event) {
@@ -279,6 +328,20 @@ async function onPopState (event) {
 	const route = getRouteFromPath(cleanPath);
 	const params = route.hasParams ? getParamsFromPath(cleanPath, route.path) : {};
 	const query = getQueryParamsFromPath(fullPath);
+
+	const requestedRoute = {
+		...route,
+		params,
+		query,
+		fullRequestPath: fullPath
+	};
+
+	if (config.onRouteMatch) {
+		await config.onRouteMatch({
+			from: get(currentRoute),
+			to: requestedRoute
+		});
+	}
 
 	// Trigger updates on the UI
 	currentPath.set(route.path);

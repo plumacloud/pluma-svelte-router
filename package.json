@@ -11,7 +11,7 @@
   "scripts": {
     "dev-test-app": "cd test-app && rollup -c -w",
     "build-test-app": "cd test-app && rollup -c",
-    "start-dev-server": "sirv test-app/public -s --no-clear"
+    "start-dev-server": "sirv test-app/public -s --no-clear --dev"
   },
   "repository": {
     "type": "git",
