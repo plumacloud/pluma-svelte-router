@@ -3,7 +3,6 @@ import path from 'path';
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import livereload from 'rollup-plugin-livereload';
 import {terser} from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
 import alias from '@rollup/plugin-alias';
@@ -21,7 +20,7 @@ function serve() {
 	return {
 		writeBundle() {
 			if (server) return;
-			server = require('child_process').spawn('npm', ['run', 'start-dev-server', '--', '--dev'], {
+			server = require('child_process').spawn('npm', ['run', 'start-sirv'], {
 				stdio: ['ignore', 'inherit', 'inherit'],
 				shell: true
 			});
@@ -35,7 +34,7 @@ function serve() {
 export default {
 	input: 'src/main.js',
 	output: {
-		sourcemap: true,
+		sourcemap: false,
 		format: 'iife',
 		name: 'app',
 		file: 'public/build/bundle.js'
@@ -58,7 +57,6 @@ export default {
 			]
 		}),
 		!production && serve(),
-		!production && livereload('public'),
 		sizeSnapshot(),
 		production && terser()
 	],

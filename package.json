@@ -9,9 +9,9 @@
   ],
   "description": "A client-side router for Svelte",
   "scripts": {
-    "dev-test-app": "cd test-app && rollup -c -w",
-    "build-test-app": "cd test-app && rollup -c",
-    "start-dev-server": "sirv test-app/public -s --no-clear --dev"
+    "dev": "cd demo-app && rollup -c -w",
+    "build-demo-app": "cd test-app && rollup -c",
+    "start-sirv": "sirv demo-app/public -s --no-clear --dev"
   },
   "repository": {
     "type": "git",
