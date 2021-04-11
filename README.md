@@ -59,7 +59,7 @@ npm i pluma-svelte-router
 
 ## More complex router config example
 
-This example is taken from the [demo app](../demo-app/router.js).
+This example is taken from the [demo app](demo-app/src/router.js).
 
 ```js
 // Router configuration object
@@ -246,7 +246,7 @@ This feature is useful for using components as layouts, or when integrating moda
 { path: '/photos/:photoId', components: [Photos, PhotoDetailModal], blockPageScroll: true }
 ````
 
-See the [demo app](../demo-app/components/About.svelte) for an example on using modals.
+See the [demo app](demo-app/src/components/About.svelte) for an example on using modals that integrate with the router.
 
 ## Links
 
