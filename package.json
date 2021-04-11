@@ -10,7 +10,7 @@
   "description": "A client-side router for Svelte",
   "scripts": {
     "dev": "cd demo-app && rollup -c -w",
-    "build-demo-app": "cd test-app && rollup -c",
+    "build-demo-app": "cd demo-app && rollup -c",
     "start-sirv": "sirv demo-app/public -s --no-clear --dev"
   },
   "repository": {
