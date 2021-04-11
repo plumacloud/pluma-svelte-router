@@ -1,3 +1,13 @@
+# 0.0.9
+
+### New features
+* `onRouteMatch` hook
+* `meta` route configuration
+
+### Breaking changes
+* `Router` component renamed to `RouterView`
+* Initial configuration has been decoupled from the `Router` component
+
 # 0.0.8
 
 ### Fixes
@@ -5,7 +15,7 @@
 
 # 0.0.7
 
-### Improvements
+### New features
 * Added `link` and `active` actions
 * Improved scroll management
 
@@ -18,7 +28,7 @@
 
 # 0.0.6
 
-### Improvements
+### New features
 * Moved history route state to `window.history` so that state will be preseved between refreshes
 * Renamed `resetScroll` to `scrollToTop`
 * Improved scroll management
