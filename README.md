@@ -4,13 +4,14 @@ This is a client-side router that uses history mode. It's super early in develop
 
 ### Features
 * <a href="https://bundlephobia.com/result?p=pluma-svelte-router" target="_blank" rel="noopener">Aprox 3kB gzip</a>
-* No dependencies other than Svelte
+* No dependencies (other than Svelte)
 * Uses history API and native links for navigation
 * Multiple options to manage scrolling
 
 Demo app: https://pluma-svelte-router-demo.netlify.app/
 
 To install:
+
 ```
 npm i pluma-svelte-router
 ```
