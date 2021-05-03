@@ -295,12 +295,23 @@ By default, this will add the `active` CSS class to the element, but you can con
 
 #### Custom active CSS class
 
-You can define a custom default active CSS class using the `activeClass` setting in the router configuration, or you can do it on each link:
+You can define a custom default active CSS class using the `activeClass` setting in the router configuration, or in the action settings:
 
 ```svelte
 <!-- Use a custom CSS class -->
-<a href="/about" use:link use:active={{class: 'is-active'}}>About</a>
+<a href="/about" use:link use:active={{activeClass: 'is-active'}}>About</a>
 ```
+
+#### `aria-current` value
+
+By default, the `active` action will add `aria-current="page"` on an active link. You can customize this value depending on your use case:
+
+```svelte
+<!-- Use a custom CSS class -->
+<a href="/about" use:link use:active={{ariaCurrent: 'location'}}>About</a>
+```
+
+See the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Element/ariaCurrent) for more info on the `aria-current` attribute.
 
 ## Programmatic navigation
 
@@ -445,6 +456,22 @@ If you need to perform async logic before entering a route, do so before trigger
 * `children` an array of children routes
 * `blockPageScroll` whether to removing the scrolling capability of the `body` element by setting `overflow: hidden;`
 * `meta` and object with values that can be read from hooks or the `currentRoute` store.
+
+### `navigate()` options
+* `path` the path that will be used to match a route
+* `scrollToTop` determines if the scroll should be set to the top left after transitioning to the next route. The default is `true`.
+* `scrollToId` scroll to an element with an `id` after transitioning to the next route.
+* `replace` replace the current item in history instead of adding a new one. The default is `false`.
+* `addToHistory` add item to history after navigation. The default is `true`.
+
+### `link` action options
+* `scrollToTop` determines if the scroll should be set to the top left after transitioning to the next route. The default is `true`.
+* `scrollToId` scroll to an element with an `id` after transitioning to the next route.
+
+### `active` action options
+* `matchStart` mark a link as active if the `href` value matches the start of the current path.
+* `activeClass` the CSS class that will be applied to the link if marked as active. The default is `active`.
+* `ariaCurrent` the value of the `aria-current` attribute that will be added to the link if marked as active.  The default is `page`.
 
 ## FAQ
 
