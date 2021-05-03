@@ -1,3 +1,11 @@
+# 0.0.12
+
+### New features
+* `aria-current` value for active links.
+
+### Breaking changes
+* `class` renamed to `activeClass` in the settings for the `active` action.
+
 # 0.0.11
 
 ### New features

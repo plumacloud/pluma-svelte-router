@@ -2,7 +2,7 @@
   "name": "pluma-svelte-router",
   "svelte": "src/index.js",
   "main": "src/index.js",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "keywords": [],
   "files": [
     "src"
