@@ -5,7 +5,7 @@ export const currentRoute = writable(null);
 export const currentPath = writable('');
 export const routerState = writable('');
 
-let config = {};
+export const config = {};
 
 // ROUTER INIT
 
@@ -24,6 +24,9 @@ export function initRouter (initialConfig) {
 
 	// Scroll to top on route change
 	config.scrollToTop = typeof initialConfig.scrollToTop === 'undefined' ? true : initialConfig.scrollToTop;
+
+	// Active default class
+	config.activeClass = typeof initialConfig.activeClass === 'undefined' ? 'active' : initialConfig.activeClass;
 
 	// Let the browser manage scrolling
 	config.manageScroll = typeof initialConfig.manageScroll === 'undefined' ? true : initialConfig.manageScroll;

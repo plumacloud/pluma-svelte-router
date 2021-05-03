@@ -1,10 +1,10 @@
 import {get} from 'svelte/store';
-import {currentRoute} from '../router.js';
+import {currentRoute, config} from '../router.js';
 
 const currentItems = [];
 
 export default function (node, options = {}) {
-	options.cssClass = options.class || 'active';
+	options.cssClass = options.class || config.activeClass;
 	options.matchStart = typeof options.matchStart === 'undefined' ? false : options.matchStart;
 
 	const item = {node, options};

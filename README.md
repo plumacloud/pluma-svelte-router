@@ -289,11 +289,17 @@ By default, this will add the `active` CSS class to the element, but you can con
 <!-- Will mark as active if the router is on /about -->
 <a href="/about" use:link use:active>About</a>
 
-<!-- Use a custom CSS class -->
-<a href="/about" use:link use:active={{class: 'is-active'}}>About</a>
-
 <!-- Mark as active if the href also matches the start of the current path eg: /products/123456/reviews -->
 <a href="/products" use:link use:active={{matchStart: true}}>Products</a>
+```
+
+#### Custom active CSS class
+
+You can define a custom default active CSS class using the `activeClass` setting in the router configuration, or you can do it on each link:
+
+```svelte
+<!-- Use a custom CSS class -->
+<a href="/about" use:link use:active={{class: 'is-active'}}>About</a>
 ```
 
 ## Programmatic navigation
@@ -427,6 +433,7 @@ If you need to perform async logic before entering a route, do so before trigger
 
 * `notFoundComponent` a component reference that will be rendered if there are no matched routes.
 * `notFoundComponents` an array of component references that will be rendered if there are no matched routes.
+* `activeClass` the default CSS class that will be applied to active links that use the `active` action.
 * `scrollToTop` determines if the scroll should be set to the top left when transitioning to a new route. The default is `true`.
 * `manageScroll` if set to `false` all scrolling features of the router will be ignored. The default is `true`.
 * `onRouteMatch` a sync function that will be triggered whenever a path matches a route
