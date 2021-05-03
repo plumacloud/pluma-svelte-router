@@ -1,36 +1,45 @@
 import {get} from 'svelte/store';
 import {currentRoute, config} from '../router.js';
 
-const currentItems = [];
+const currentLinks = [];
 
 export default function (node, options = {}) {
-	options.cssClass = options.class || config.activeClass;
+	options.activeClass = options.activeClass || config.activeClass;
 	options.matchStart = typeof options.matchStart === 'undefined' ? false : options.matchStart;
+	options.ariaCurrent = typeof options.ariaCurrent === 'undefined' ? 'page' : options.ariaCurrent;
 
-	const item = {node, options};
-	currentItems.push(item);
+	const link = {node, options};
+	currentLinks.push(link);
 
 	const route = get(currentRoute);
-	if (route) setActiveClass(item, route);
+	if (route) setActiveClass(link, route);
 
 	return {
 		destroy () {
-			// Delete the item when removed from the DOM
-			const index = currentItems.findIndex((item) => item.node === node);
-			currentItems.splice(index, 1);
+			// Delete the link when removed from the DOM
+			const index = currentLinks.findIndex((link) => link.node === node);
+			currentLinks.splice(index, 1);
 		}
 	}
 }
 
-function setActiveClass (item, route) {
-	const linkPath = item.node.pathname;
-	const {matchStart, cssClass} = item.options;
+function setActiveClass (link, route) {
+	const linkPath = link.node.pathname;
+	const {matchStart, activeClass, ariaCurrent} = link.options;
 
 	let isActive = false;
 
+	// If the currentRoute doesn't have params
+	// simply compare the href with the current path
+
 	if (!route.hasParams) {
-		isActive = linkPath === route.path || (matchStart && linkPath !== '/' && route.path.startsWith(linkPath));
+		if (linkPath === route.path) {
+			isActive = true;
+		} else if (matchStart && linkPath !== '/' && route.path.startsWith(linkPath)) {
+			isActive = true;
+		}
 	} else {
+
 		// If the current route has params we need to determine
 		// if the path of the link matches with the route path
 		// ignoring the segments that are parameters
@@ -38,30 +47,42 @@ function setActiveClass (item, route) {
 		const linkPathSegments = linkPath.split('/');
 		const routePathSegments = route.path.split('/');
 
-		if (!matchStart && linkPathSegments.length !== routePathSegments.length) {
+		const linkPathIsLonger = linkPathSegments.length > routePathSegments.length;
+		const sameNumberOfSegments = linkPathSegments.length === routePathSegments.length;
+
+		// If the link path has more segments in any case
+		// or, we're not doing a partial match and the number of segments is different
+		// the link can never be active
+
+		if (linkPathIsLonger || (!matchStart && !sameNumberOfSegments)) {
 			isActive = false;
 		} else {
 			isActive = true;
 
-			// We're only traversing the segments of the link path
-			// because it could be shorter than the full route path
-			// and we may want to mark the link as active if it matches
-			// the first part
+			// We need to traverse the segments of the link path because
+			// if we're doing a partial match it's going to have less segments than the full path
 
-			for (let i = 1; i < linkPathSegments.length; i++) {
+			for (var i = 0; i < linkPathSegments.length; i++) {
 				if (routePathSegments[i].charAt(0) !== ':' && linkPathSegments[i] !== routePathSegments[i]) {
 					isActive = false;
+					break;
 				}
 			}
 		}
+
 	}
 
-	if (isActive) item.node.classList.add(cssClass);
-	else item.node.classList.remove(cssClass);
+	if (isActive) {
+		link.node.classList.add(activeClass);
+		link.node.setAttribute('aria-current', ariaCurrent);
+	} else {
+		link.node.classList.remove(activeClass);
+		link.node.removeAttribute('aria-current');
+	}
 }
 
 currentRoute.subscribe((route) => {
-	currentItems.forEach((item) => {
+	currentLinks.forEach((item) => {
 		setActiveClass(item, route);
 	});
 });
