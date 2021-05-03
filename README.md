@@ -70,7 +70,7 @@ This example is taken from the [demo app](demo-app/src/router.js).
     // If the route is not private, just return true and let the router continue
     if (!to.meta.isPrivate) return true;
 
-    if (isAuthenticated{
+    if (isAuthenticated) {
       return true;
     } else {
       navigate({
@@ -113,19 +113,21 @@ This example is taken from the [demo app](demo-app/src/router.js).
 this configuration will produce the following available paths:
 ```
 /
+/login
 /about
 /about/some-modal
 /hello/:name
 /nested
 /nested/child-a
 /nested/child-b
+/private
 ```
 
 ## The `RouterView` component
 
 This component simply renders the current route and nested routes. It does not contain any logic or state. You can freely add it, remove it, or move it around as you see fit. This will not change the state of the router.
 
-For example:
+For example this could be your `App.svelte` component:
 
 ```svelte
 <script>
