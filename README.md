@@ -242,7 +242,7 @@ This feature is useful for using components as layouts, nesting layouts, or inte
 
 ```js
 // Layout
-{ path: '/home', components: [AppLayout, Shell, Home] },
+{ path: '/home', components: [AppLayout, ShellLayout, Home] },
 
 // Picture modal
 { path: '/photos', components: [Photos] },
