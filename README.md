@@ -238,7 +238,7 @@ Nested components can be composed right from the router by using the `components
 
 Just as with nested routes, this will render the `Child` component in the default slot of the `Parent` component.
 
-This feature is useful for using components as layouts, or when integrating modals with the router. For example, when you want deep linking on modals, or you'd like a modal to close when pressing back:
+This feature is useful for using components as layouts, nesting layouts, or integrating modals with the router. For example, when you want deep linking on modals, or you'd like a modal to close when pressing back:
 
 ```js
 // Layout
